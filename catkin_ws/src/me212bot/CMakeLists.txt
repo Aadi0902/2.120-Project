@@ -15,10 +15,11 @@ find_package(catkin REQUIRED COMPONENTS
 ## Declare ROS messages, services and actions ##
 ################################################
 
-## Generate messages in the 'msg' folder
-# add_message_files(
-#   FILES
-# )
+# Generate messages in the 'msg' folder
+add_message_files(
+  FILES
+  WheelCmdVel.msg
+)
 
 ## Generate services in the 'srv' folder
 # add_service_files(
@@ -36,8 +37,8 @@ find_package(catkin REQUIRED COMPONENTS
 
 ## Generate added messages and services with any dependencies listed here
 generate_messages(
-#   DEPENDENCIES
-#   geometry_msgs#   std_msgs
+  DEPENDENCIES
+  geometry_msgs#   std_msgs
 )
 
 
