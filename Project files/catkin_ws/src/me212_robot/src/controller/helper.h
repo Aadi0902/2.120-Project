@@ -8,9 +8,9 @@
 //#ifndef ArduinoLab2Helper_h
 //#define ArduinoLab2Helper_h
 
-//#include "Arduino.h"
-//#include "DualMC33926MotorShield.h"
-//#include "LS7366.h"
+#include "Arduino.h"
+#include "DualMC33926MotorShield.h"
+#include "LS7366.h"
 
 
 //Some useful constant definitions
@@ -118,6 +118,4 @@ class PathPlanner {
     unsigned long prevSerialTime;
 };
 
-#endif
-
-
+//#endif
