@@ -2,38 +2,20 @@
 
 ***********************************************************************************/
 #include <Encoder.h>
-#include <ros.h>
-#include <std_msgs/Float64MultiArray.h>
-#include <geometry_msgs/Pose2D.h>
-#include "Endeffector_helper.h"
-
-PathPlanner pathPlanner;      // path planner
-
-// ================================================================
-// ===               ROS                   ===
-// ================================================================
-ros::NodeHandle node_handle;
-//std_msgs::UInt16 ee_mode;
-geometry_msgs::Pose2D set_ee_pose;
-
-void subscriberCallback(const std_msgs::Float64MultiArray& ee_mode) {
-   pathPlanner.current_mode = ee_mode.data[0];
-   pathPlanner.desired_y_e = ee_mode.data[1];
-   pathPlanner.desired_theta = ee_mode.data[2];
-}
-
-ros::Subscriber<std_msgs::Float64MultiArray> ee_mode_subscriber("ee_mode", &subscriberCallback); // "ee_mode" is the topic name, &subscriberCallback is the subscriber call back function
-ros::Publisher ee_pose_publisher("Set_EE_pose", &set_ee_pose); // "Set_EE_pose" is the name of the topic to publish, set_ee_pose is the variable type
 
 
+
+#define straight_line_up
+//#define excavate
+//#define dump
+//#define home_pos
 
 
 // pathPlanner.set_mode(1) // Set mode (Usually a ros node should do this)
 // Manipulator dimensions and joint angle limits
 const float l_1 = 0.09; // link1 lenth (m)
-const float l_2 = 0.11185; // link2 lenth (m)
-const float q1_limit =  60 * M_PI / 180; // joint angle limit for q1 (rad), M_PI is slightly more accurate and more portable then PI
-const float q2_limit = 100 * M_PI / 180; // joint angle limit for q2 (rad), M_PI is slightly more accurate and more portable then PI
+const float q1_limit =  360 * M_PI / 180; // joint angle limit for q1 (rad), M_PI is slightly more accurate and more portable then PI
+const float q2_limit = 360 * M_PI / 180; // joint angle limit for q2 (rad), M_PI is slightly more accurate and more portable then PI
 
 
 // ================================================================
@@ -44,18 +26,20 @@ const float q2_limit = 100 * M_PI / 180; // joint angle limit for q2 (rad), M_PI
 
 // Motor 1 requires higher gains due to larger moment of inertia
 // Try 1.5 - 2.5 times the Motor 2 gains
-float Kp_1 = 0.0;
+float Kp_1 = 150.0;
 float Kd_1 = 0.0;
-float Ki_1 = 0.0;
+float Ki_1 = 10.0;
 
 // Motor 2 requires smaller gains compared to Motor 1
 // Try 3 - 5 times the gains from previous lab
-float Kp_2 = 0.0;
+float Kp_2 = 100.0;
 float Kd_2 = 0.0;
-float Ki_2 = 0.0;
+float Ki_2 = 10.0;
 
+int pwm_max_m1 = 125;
+int pwm_max_m2 = 255;
 // control sampling period
-#define period_us 10000  // microseconds (1 sec = 1000000 us)
+#define period_us 10000  // microseconds (1 sec = 1000000 us) i.e 10ms
 
 // ================================================================
 // ===               SERIAL OUTPUT CONTROL                      ===
@@ -91,8 +75,8 @@ int _nSF = 12;
 // The effective resolution is 480 CPR with quadrature decoding.
 // Calibrate the conversion factor by hand.
 
-float C2Rad1 = 1000/(2*PI); // TO DO: replace it with your conversion factor
-float C2Rad2 = 98 * 12 * 4 / (2 * PI);
+float C2Rad1 = 1080/(2*PI); // TO DO: replace it with your conversion factor
+float C2Rad2 = 98 * 12 * 4 / (2 * PI); // TO DO: replace it with your conversion factor
 
 Encoder Mot1(3, 5);
 Encoder Mot2(2, 6);
@@ -118,8 +102,16 @@ double set_point_1 = 0; // Set point (desired joint position) for motor 1
 double set_point_2 = 0; // Set point (desired joint position) for motor 2
 float x_e, y_e, theta; // end-effector position
 double q_1_ik, q_2_ik; // inverse kinematics solutions
+double q_1_offset = 0; // Hacky way to test individually
+double q_2_offset = 0; // Hacky way to test individually
 int i = 0; // To generate waypoints of a path.
 int flag = 0;
+float y_e_down = -0.07;
+float y_e_up = 0.07;
+float y_e_home = 0;
+float theta_home = 0;
+float theta_up = 48*PI/180;
+float theta_down = -48*PI/180;
 // ================================================================
 // ===                      INITIAL SETUP                       ===
 // ================================================================
@@ -136,10 +128,32 @@ void setup() {
   pinMode(_nD2,OUTPUT);
   digitalWrite(_nD2,HIGH);
   
-  node_handle.initNode(); // Initialize node
-  node_handle.advertise(ee_pose_publisher); // Advertise publisher
-  node_handle.subscribe(ee_mode_subscriber); // Subscribe to the subscriber
-  delay(10);    // delay 0.01 second
+  delay(500);    // delay 0.01 second
+
+  #ifdef straight_line_up
+  y_e = y_e_down;
+  theta = theta_up;
+  #endif
+
+  #ifdef excavate
+  y_e = y_e_down;
+  theta = theta_home;
+  #endif
+
+  #ifdef dump
+  y_e = y_e_up;
+  theta = theta_up;
+  #endif
+
+  #ifdef home_pos
+  y_e = y_e_home;
+  theta = theta_home;
+  #endif
+
+  Inverse_K();
+  q_1_offset = set_point_1;
+  q_2_offset = set_point_2;
+  
 }
 
 
@@ -155,38 +169,68 @@ void loop() {
 
     // Joint position from the encoder counts
 
-    q_1 = Mot1.read() / C2Rad1;    // convert to radians
-    q_2 = Mot2.read() / C2Rad2;    // convert to radians
+    q_1 = q_1_offset + Mot1.read() / C2Rad1;    // convert to radians
+    q_2 = q_2_offset + Mot2.read() / C2Rad2;    // convert to radians
 
-    pathPlanner.setCurrentPos(q_1, q_2);
+
+    // Straight line up:
+    #ifdef straight_line_up
+    i = i + 1;
+    y_e = y_e_down + i*(y_e_up - y_e_down)/(period_us/10); // Change 1000 for tuning // takes period_us/10 milliseconds to complete
+
+    if(y_e > y_e_up || flag == 1)
+    {
+        y_e = y_e_up;
+        i = 0;
+        flag = 1;
+    }
+    theta = theta_up;
+    #endif
+
+    #ifdef excavate
+    i = i + 1;
+    theta = theta_home + i*(theta_up - theta_home)/(period_us/10); // Change 1000 for tuning
+
+    if(theta > theta_up || flag == 1)
+    {
+        theta = theta_up;
+        i = 0;
+        flag = 1;
+    }
+    y_e = y_e_down;
+    #endif
+
+    #ifdef dump
+    i = i + 1;
+    theta = theta_up - i*(theta_up - theta_down)/(period_us/10); // Change 1000 for tuning
+
+    if(theta < theta_down || flag == 1)
+    {
+        theta = theta_down;
+        i = 0;
+        flag = 1;
+    }
+//    y_e = l_1*sin(asin((y_e_up-l_2*sin(theta_up))/l_1)) + l_2*sin(theta);
+    #endif
+
+    #ifdef home_pos
+    i = i + 1;
+    y_e = y_e_home - i*(y_e_home - y_e_down)/(period_us/10); // Change 1000 for tuning
+
+    if(y_e < y_e_down || flag == 1)
+    {
+        y_e = y_e_down;
+        i = 0;
+        flag = 1;
+    }
+    theta = theta_down + i*(theta_home - theta_down)/(period_us/10);
+    #endif
     // ================================================================
     // ===                    GET SETPOINT                          ===
     // ================================================================
 
-    
-    if(pathPlanner.current_mode == 3) // Straight line up
-    {
-      i = i + 1;
-      y_e = pathPlanner.lower_ye + i*(pathPlanner.upper_ye - pathPlanner.lower_ye)/50; // Change 50 for tuning
-
-      if(y_e > pathPlanner.desired_y_e || flag == 1)
-      {
-        y_e = pathPlanner.desired_y_e;
-        flag = 1;
-        i = 0;
-      }
-      theta = pathPlanner.desired_theta;
-    }
-    else
-    {
-      y_e = pathPlanner.desired_y_e; // Define value for testing
-      theta = pathPlanner.desired_theta; // Define value for testing
-    }
-    
     Inverse_K();
 
-    ee_pose_publisher.publish(&set_ee_pose); // Publish message
-    node_handle.spinOnce();
     // ================================================================
     // ===                    CONTROLLER CODE                       ===
     // ================================================================
@@ -198,7 +242,7 @@ void loop() {
     filt_d_error_1 = alpha * d_error_1 + (1 - alpha) * filt_d_error_1;
     sum_error_1 += error_1 * loop_time;
     error_pre_1 = error_1;
-    motorControl(DIR_1, PWM_1, error_1, d_error_1, sum_error_1, Kp_1, Kd_1, Ki_1);
+    motorControl(DIR_1, PWM_1, error_1, d_error_1, sum_error_1, Kp_1, Kd_1, Ki_1, pwm_max_m1,1);
 
     // PID controller for motor 2
     error_2 = set_point_2 - q_2;
@@ -207,7 +251,7 @@ void loop() {
     filt_d_error_2 = alpha * d_error_2 + (1 - alpha) * filt_d_error_2;
     sum_error_2 += error_2 * loop_time;
     error_pre_2 = error_2;
-    motorControl(DIR_2, PWM_2, error_2, d_error_2, sum_error_2, Kp_2, Kd_2, Ki_2);
+    motorControl(DIR_2, PWM_2, error_2, d_error_2, sum_error_2, Kp_2, Kd_2, Ki_2, pwm_max_m2, 2);
 
     // ================================================================
     // ===                    PRINT DATA                            ===
@@ -247,15 +291,20 @@ void loop() {
 
 void Inverse_K()
 {
-  //You can use l_1, l_2 for the lenth of each link and x_e and y_e for the end-effector position.
-
-  x_e = (2*l_2*cos(theta) + sqrt(pow(2*l_2*cos(theta),2) + 8*l_2*y_e*sin(theta) - 4*l_2*l_2 + 4 * l_1*l_1 - 4 * y_e * y_e))/2; // change sign before sqrt for othe direction
-  q_1_ik = atan((y_e - l_2*sin(theta))/(x_e - l_2 * cos(theta)));  
+  double y_e_max = l_1; // Constrain y_e so that unrealistic values are not possible
+  double y_e_min = -l_1; // Constrain y_e so that unrealistic values are not possible
+  if(y_e > y_e_max)
+  {
+    y_e = y_e_max;
+  }
+  else if(y_e < y_e_min)
+  {
+    y_e = y_e_min;
+  }
+  x_e = l_1*cos(theta);
+  q_1_ik = atan(y_e/x_e);  
   q_2_ik = theta - q_1_ik; 
 
-  set_ee_pose.x = x_e;
-  set_ee_pose.y = y_e;
-  set_ee_pose.theta = theta; 
   // position limit constraints (update set_point_1 and set_point_2 when they are within the limits)
   if (abs(set_point_1) < q1_limit && abs(set_point_2) < q2_limit)
   {
@@ -272,7 +321,7 @@ void Inverse_K()
 // ===                   MOTOR CONTROLLER                       ===
 // ================================================================
 
-void motorControl(int DIR_x, int PWM_x, float error, float d_error, float sum_error, float Kp_x, float Kd_x, float Ki_x)
+void motorControl(int DIR_x, int PWM_x, float error, float d_error, float sum_error, float Kp_x, float Kd_x, float Ki_x, int pwm_max, int motor)
 {
   float pwm_command;
 
@@ -280,17 +329,31 @@ void motorControl(int DIR_x, int PWM_x, float error, float d_error, float sum_er
   Icontrol = sum_error * Ki_x;
   Dcontrol = d_error * Kd_x;
 
-  Icontrol = constrain(Icontrol, -255, 255);  // I control saturation limits for anti-windup
+  Icontrol = constrain(Icontrol, -1*pwm_max, pwm_max);  // I control saturation limits for anti-windup
 
   pwm_command = Pcontrol + Icontrol + Dcontrol;
 
   if (pwm_command > 0)
-  { digitalWrite(DIR_x, LOW);
-    analogWrite(PWM_x, (int) constrain(pwm_command, 0, 255));
+  { if(motor==1)
+    {
+      digitalWrite(DIR_x, HIGH);
+    }
+    else
+    {
+      digitalWrite(DIR_x, LOW);
+    }
+    analogWrite(PWM_x, (int) constrain(pwm_command, 0, pwm_max));
   }
   else
   {
-    digitalWrite(DIR_x, HIGH);
-    analogWrite(PWM_x, (int) constrain(abs(pwm_command), 0, 255));
+    if(motor==1)
+    {
+      digitalWrite(DIR_x, LOW);
+    }
+    else
+    {
+      digitalWrite(DIR_x, HIGH);
+    }
+    analogWrite(PWM_x, (int) constrain(abs(pwm_command), 0, pwm_max));
   }
 }
