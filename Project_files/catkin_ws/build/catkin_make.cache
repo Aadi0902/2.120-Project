@@ -1,0 +1,2 @@
+me212_robot
+-DCATKIN_DEVEL_PREFIX=/home/robot/Documents/2.120-Project/Project_files/catkin_ws/devel -DCMAKE_INSTALL_PREFIX=/home/robot/Documents/2.120-Project/Project_files/catkin_ws/install -G Unix Makefiles
