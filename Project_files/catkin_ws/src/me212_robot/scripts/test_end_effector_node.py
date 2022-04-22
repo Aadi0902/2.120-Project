@@ -23,7 +23,7 @@ def main():
     #rospy.Subscriber("Position_reached", Bool, callback)
     
     rospy.init_node('ee_coord_publisher', anonymous=True)
-    rate = rospy.Rate(0.2) #0.2hz # 10hz
+    rate = rospy.Rate(0.12) #0.12hz # 10hz
 
     mode_data = Float64MultiArray()
     mode = 2
@@ -54,8 +54,9 @@ def main():
             task_time = 0.5
         
         mode_data.data = [mode, y_e, theta, task_time]
-        if mode == 4:
+        if mode == 2:
             mode = 0
+        mode = mode + 1
         rospy.loginfo(mode_data)
         ee_coord_pub.publish(mode_data)
         rate.sleep()
