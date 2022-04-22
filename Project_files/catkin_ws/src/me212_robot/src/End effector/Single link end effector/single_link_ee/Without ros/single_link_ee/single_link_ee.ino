@@ -33,11 +33,11 @@ float Ki_1 = 10.0;
 
 // Motor 2 requires smaller gains compared to Motor 1
 // Try 3 - 5 times the gains from previous lab
-float Kp_2 = 100.0;
+float Kp_2 = 150.0;
 float Kd_2 = 0.0;
 float Ki_2 = 10.0;
 
-int pwm_max_m1 = 125;
+int pwm_max_m1 = 255;
 int pwm_max_m2 = 255;
 // control sampling period
 
@@ -190,7 +190,7 @@ void loop() {
 
     #ifdef excavate
     i = i + 1;
-    theta = theta_home + i*(theta_up - theta_home)/(period_us/10); // Change 1000 for tuning
+    theta = theta_home + i*(theta_up - theta_home)/100; // Change 1000 for tuning
 
     if(theta > theta_up || flag == 1)
     {
