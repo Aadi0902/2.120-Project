@@ -7,9 +7,9 @@
 
 
 //#define excavate
-//#define straight_line_up
+#define straight_line_up
 //#define dump
-#define home_pos
+//#define home_pos
 #define period_us 10000  // microseconds (1 sec = 1000000 us) i.e 10ms
 
 // pathPlanner.set_mode(1) // Set mode (Usually a ros node should do this)
