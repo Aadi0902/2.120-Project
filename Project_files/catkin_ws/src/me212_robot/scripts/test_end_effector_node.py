@@ -12,17 +12,23 @@ lower_ye = -0.07
 upper_ye = 0.07
 theta_carry = 48.01 * np.pi/180;
 theta_home = 0
-theta_dump = -48.01*pi/180;
+theta_dump = -48.01*np.pi/180;
 ee_coord_pub = rospy.Publisher('ee_mode', Float64MultiArray, queue_size=10)
 rospy.init_node('ee_mode_pub_sub', anonymous=True)
 
 pos_status = False
 mode_data = Float64MultiArray()
 
-exec_mode = 0 # Set default mode to 0
+exec_mode = 0# Set default mode to 0
+
+y_e = 0
+theta = 0
+task_time = 0.5
+
 def pos_callback(pos_reached):
     if pos_reached:
         mode = exec_mode
+        global y_e, theta, task_time
         if mode == 1: # Home position
             y_e = lower_ye
             theta = theta_home
@@ -43,6 +49,7 @@ def pos_callback(pos_reached):
             theta = theta_dump
             task_time = 0.5
         else:
+            print(type(mode))
             y_e = 0
             theta = 0
             task_time = 0.5 # Doesn't mean anything in this section
@@ -54,7 +61,8 @@ def pos_callback(pos_reached):
     rospy.loginfo(pos_status)
 
 def mode_callback(mode_num):
-    exec_mode = mode_num
+    global exec_mode
+    exec_mode = mode_num.data
     rospy.loginfo(mode_num)
 
 def main():
