@@ -111,7 +111,6 @@ ros::Publisher enc_publisher("enocoder_values", &enc_values);
 
 void setup() {
 
-  Serial.begin(115200);
 
   // configure motor shield M1 and M2 outputs
   pinMode(PWM_1, OUTPUT);
@@ -120,6 +119,7 @@ void setup() {
   pinMode(DIR_2, OUTPUT);
   pinMode(_nD2,OUTPUT);
   digitalWrite(_nD2,HIGH);
+  pinMode(_nSF,INPUT);
 
   node_handle.getHardware()->setBaud(115200);
   node_handle.initNode(); // Initialize node
