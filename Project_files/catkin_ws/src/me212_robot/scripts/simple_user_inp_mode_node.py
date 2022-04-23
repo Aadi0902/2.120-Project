@@ -16,8 +16,8 @@ theta_down = -48.01*np.pi/180;
 
 
 def main():
-    mode_pub = rospy.Publisher('exec_mode', Float64MultiArray, queue_size=10)
-    rospy.init_node('user_mode_pub',anonymous=True)
+    mode_pub = rospy.Publisher("exec_mode", Float64MultiArray, queue_size=10)
+    rospy.init_node("user_mode_pub",anonymous=True)
 
     while not rospy.is_shutdown():
         try:

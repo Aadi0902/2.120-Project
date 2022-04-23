@@ -23,6 +23,12 @@ theta_down = -48.01*np.pi/180;
 desired_y_e = 0
 desired_theta = 0
 
+in_y_e = 0
+in_theta = 0
+
+set_point_1 = 0
+set_point_2 = 0
+
 set_point_pub = rospy.Publisher("set_point_topic", Float64MultiArray, queue_size=10)
 rospy.init_node("set_point_pub_sub", anonymous=True)
 
@@ -39,7 +45,7 @@ prev_time = cur_time
 def enc_callback(enc_values):
     q_1 = enc_values.data[0]
     q_2 = enc_values.data[1]
-    global mode, prev_mode, set_point_1, set_point_2, l_1, tstep, cur_time, prev_time
+    global prev_mode, set_point_1, set_point_2, l_1, tstep, cur_time, prev_time, in_y_e, in_theta
 
     if not mode == prev_mode:
         in_y_e = l_1 * np.sin(q_1)
@@ -60,7 +66,7 @@ def enc_callback(enc_values):
     (set_point_1, set_point_2) = inverse_k(y_e, theta)
 
     set_point_arr = Float64MultiArray()
-    set_point_arr.data = [float(set_point_1), float(set_point_2)]
+    set_point_arr.data = [float(set_point_1), float(set_point_2), mode]
     set_point_pub.publish(set_point_arr)
     rospy.loginfo(set_point_arr)
 
@@ -93,6 +99,7 @@ def mode_callback(mode_param):
     rospy.loginfo(mode)
 
 def inverse_k(y_e, theta):
+    global set_point_1, set_point_2
     y_e_max = l_1 # Constrain y_e so that unrealistic values are not possible
     y_e_min = -l_1 # Constrain y_e so that unrealistic values are not possible
     if y_e > y_e_max:
@@ -100,8 +107,8 @@ def inverse_k(y_e, theta):
     elif y_e < y_e_min:
         y_e = y_e_min
     
-    x_e = l_1*np.cos(np.atan(y_e/np.sqrt(l_1*l_1 - y_e*y_e)))
-    q_1_ik = np.atan(y_e/x_e)  
+    x_e = np.sqrt(l_1*l_1 - y_e*y_e)
+    q_1_ik = np.arctan(y_e/x_e)  
     q_2_ik = theta - q_1_ik
 
     # position limit constraints (update set_point_1 and set_point_2 when they are within the limits)
