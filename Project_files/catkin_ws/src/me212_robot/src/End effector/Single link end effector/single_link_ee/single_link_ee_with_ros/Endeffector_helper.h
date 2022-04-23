@@ -1,15 +1,3 @@
-//#ifndef ArduinoLab2Helper_h
-//#define ArduinoLab2Helper_h
-
-//#include "Arduino.h"
-//#include "DualMC33926MotorShield.h"
-//
-//#include "LS7366.h"
-
-
-
-
-
 class PathPlanner {
   public:
     float current_mode;

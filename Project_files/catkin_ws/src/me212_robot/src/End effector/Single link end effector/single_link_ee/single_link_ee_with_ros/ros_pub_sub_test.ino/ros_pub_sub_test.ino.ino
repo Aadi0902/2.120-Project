@@ -67,7 +67,7 @@ bool          reached = false;
 PathPlanner ee_planner;      // path planner
 
 
-#define period_us 20000 // 20ms (0.02 second, 50Hz), 1000000 microseconds = 1 second
+#define period_us 50000 // 50ms (0.05 second, 20Hz), 1000000 microseconds = 1 second
 
 // ================================================================
 // ===               ROS                   ===
@@ -133,7 +133,6 @@ void loop() {
     enc_values.data_length = 2;
     enc_values.data[0] = q_1;
     enc_values.data[1] = q_2;
-    ee_planner.setCurrentPos(q_1, q_2);
 
     if(ee_planner.current_mode != prev_mode)
     {
@@ -163,8 +162,8 @@ void loop() {
         reached = true;
       }
       theta = ee_planner.desired_theta;
-      enc_values.data[0] = 100;
-      enc_values.data[1] = 100;
+      //enc_values.data[0] = 100;
+      //enc_values.data[1] = 100;
     }
     else if(ee_planner.current_mode == 2) // Excavate
     {
@@ -178,9 +177,7 @@ void loop() {
          i = 0;
          reached = true;
       }
-      y_e = ee_planner.desired_y_e;
-      enc_values.data[0] = 200;
-      enc_values.data[1] = 200;  
+      y_e = ee_planner.desired_y_e;  
     }
     else if(ee_planner.current_mode == 3) // Straight line up
     {
@@ -197,8 +194,6 @@ void loop() {
         reached = true;
       }
       theta = ee_planner.desired_theta;
-      enc_values.data[0] = 300;
-      enc_values.data[1] = 300;
     }
     else if (ee_planner.current_mode == 4) // Dump
     {
@@ -213,17 +208,13 @@ void loop() {
          i = 0;
          reached = true;
       }
-      y_e = ee_planner.desired_y_e;
-      enc_values.data[0] = 400;
-      enc_values.data[1] = 400;   
+      y_e = ee_planner.desired_y_e;  
     }
     else
     {
       y_e = in_y_e; // Define value for testing
       theta = in_theta; // Define value for testing
       reached = true;
-      enc_values.data[0] = 500;
-      enc_values.data[1] = 500;
     }
 
     pos_reached.data = reached;

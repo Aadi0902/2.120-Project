@@ -32,22 +32,22 @@ def pos_callback(pos_reached):
         if mode == 1: # Home position
             y_e = lower_ye
             theta = theta_home
-            task_time = 0.5
+            task_time = 1
         elif mode == 2: # Excavate
             #mode = 2
             y_e = lower_ye
             theta = theta_carry
-            task_time = 0.5
+            task_time = 1
         elif mode == 3: # Straigh line up
             #mode = 3
             y_e = upper_ye
             theta = theta_carry
-            task_time = 4
+            task_time = 2
         elif mode ==4: # Dump
             #mode = 4
             y_e = upper_ye
             theta = theta_dump
-            task_time = 0.5
+            task_time = 1
         else:
             print(type(mode))
             y_e = 0

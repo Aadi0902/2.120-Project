@@ -41,7 +41,7 @@ int pwm_max_m1 = 125;
 int pwm_max_m2 = 255;
 
 // control sampling period
-#define period_us 10000  // microseconds (1 sec = 1000000 us)
+#define period_us 50000  // microseconds (1 sec = 1000000 us)
 
 // ================================================================
 // ===               SERIAL OUTPUT CONTROL                      ===
@@ -174,7 +174,6 @@ void loop() {
     //enc_values.data_length = 2;
     //enc_values.data[0] = q_1;
     //enc_values.data[1] = q_2;
-    ee_planner.setCurrentPos(q_1, q_2);
 
     if(ee_planner.current_mode != prev_mode)
     {
@@ -203,6 +202,7 @@ void loop() {
         reached = true;
       }
       theta = ee_planner.desired_theta;
+      theta = 1000;
     }
     else if(ee_planner.current_mode == 2) // Excavate
     {
@@ -216,7 +216,8 @@ void loop() {
          i = 0;
          reached = true;
       }
-      y_e = ee_planner.desired_y_e;  
+      y_e = ee_planner.desired_y_e; 
+      theta = 2000; 
     }
     else if(ee_planner.current_mode == 3) // Straight line up
     {
@@ -233,6 +234,7 @@ void loop() {
         reached = true;
       }
       theta = ee_planner.desired_theta;
+      theta = 3000;
     }
     else if (ee_planner.current_mode == 4) // Dump
     {
@@ -247,13 +249,15 @@ void loop() {
          i = 0;
          reached = true;
       }
-      y_e = ee_planner.desired_y_e;   
+      y_e = ee_planner.desired_y_e;  
+      theta = 4000; 
     }
     else
     {
       y_e = in_y_e; // Define value for testing
       theta = in_theta; // Define value for testing
       reached = true;
+      theta = -1000;
     }
 
     pos_reached.data = reached;
