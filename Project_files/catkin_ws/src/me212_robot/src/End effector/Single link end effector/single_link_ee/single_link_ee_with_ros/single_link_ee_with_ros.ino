@@ -129,7 +129,7 @@ void subscriberCallback(const std_msgs::Float64MultiArray& ee_mode) {
 
 ros::Subscriber<std_msgs::Float64MultiArray> ee_mode_subscriber("ee_mode", &subscriberCallback); // "ee_mode" is the topic name, &subscriberCallback is the subscriber call back function
 ros::Publisher ee_pose_publisher("Set_EE_pose", &set_ee_pose); // "Set_EE_pose" is the name of the topic to publish, set_ee_pose is the variable type
-ros::Publisher pos_reached_publisher("Position_reached", &pos_reached);
+ros::Publisher pos_reached_publisher("reached_pos", &pos_reached);
 //ros::Publisher enc_publisher("Enocoder_values", &enc_values);
 // ================================================================
 // ===                      INITIAL SETUP                       ===

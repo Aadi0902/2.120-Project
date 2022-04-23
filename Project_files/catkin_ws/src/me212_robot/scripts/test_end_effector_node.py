@@ -1,38 +1,28 @@
 #!/usr/bin/python
-# This code makes a node called ee_coord_publisher that publishes a float64multiarray containing [mode, desired_y_e, desired_theta] 
+# Publishes a float64multiarray containing [mode, desired_y_e, desired_theta, time] 
 
 import rospy
+import numpy as np
 from std_msgs.msg import Float64MultiArray
 from std_msgs.msg import Bool
+from std_msgs.msg import Int16
 
+
+lower_ye = -0.07
+upper_ye = 0.07
+theta_carry = 48.01 * np.pi/180;
+theta_home = 0
+theta_dump = -48.01*pi/180;
+ee_coord_pub = rospy.Publisher('ee_mode', Float64MultiArray, queue_size=10)
+rospy.init_node('ee_mode_pub_sub', anonymous=True)
 
 pos_status = False
+mode_data = Float64MultiArray()
 
-#def callback(pos_reached):
-    #pos_status = pos_reached;
-    #rospy.loginfo(pos_status)
-    
-def main():
-    pi = 22/7;
-    lower_ye = -0.07
-    upper_ye = 0.07
-    theta_carry = 48.01 * pi/180;
-    theta_home = 0
-    theta_dump = -48.01*pi/180;
-    ee_coord_pub = rospy.Publisher('ee_mode', Float64MultiArray, queue_size=10)
-    #rospy.Subscriber("Position_reached", Bool, callback)
-    
-    rospy.init_node('ee_coord_publisher', anonymous=True)
-    rate = rospy.Rate(0.15) #0.12hz # 10hz
-
-    mode_data = Float64MultiArray()
-    mode = 2
-    while not rospy.is_shutdown():
-        
-        #if pos_status == True:
-           # mode = mode + 1
-            
-        
+exec_mode = 0 # Set default mode to 0
+def pos_callback(pos_reached):
+    if pos_reached:
+        mode = exec_mode
         if mode == 1: # Home position
             y_e = lower_ye
             theta = theta_home
@@ -52,17 +42,26 @@ def main():
             y_e = upper_ye
             theta = theta_dump
             task_time = 0.5
+        else:
+            y_e = 0
+            theta = 0
+            task_time = 0.5 # Doesn't mean anything in this section
         
         mode_data.data = [mode, y_e, theta, task_time]
-        if mode == 4:
-            mode = 0
-        mode = mode + 1
         rospy.loginfo(mode_data)
         ee_coord_pub.publish(mode_data)
-        rate.sleep()
-        
-        #if pos_status == True:
-            #rospy.sleep(0.3) # 0.3 seconds
+
+    rospy.loginfo(pos_status)
+
+def mode_callback(mode_num):
+    exec_mode = mode_num
+    rospy.loginfo(mode_num)
+
+def main():
+
+    rospy.Subscriber("reached_pos", Bool, pos_callback)
+    rospy.Subscriber("exec_mode", Int16, mode_callback)
+
     rospy.spin()
 if __name__ == '__main__':
     try:
