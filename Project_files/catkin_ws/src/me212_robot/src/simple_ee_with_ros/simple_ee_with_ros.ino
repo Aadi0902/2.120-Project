@@ -7,7 +7,7 @@
 
 
 
-
+// rosrun rosserial_python serial_node.py _port:=/dev/ttyACM0 _baud:=115200
 // ================================================================
 // ===               PID FEEDBACK CONTROLLER                    ===
 // ================================================================
@@ -102,7 +102,7 @@ void subscriberCallback(const std_msgs::Float64MultiArray& set_point_val) {
    set_point_2 = set_point_val.data[1];
 }
 
-//ros::Subscriber<std_msgs::Float64MultiArray> set_point_subscriber("set_point_topic", &subscriberCallback); // "set_point_topic" is the topic name, &subscriberCallback is the subscriber call back function
+ros::Subscriber<std_msgs::Float64MultiArray> set_point_subscriber("set_point_topic", &subscriberCallback); // "set_point_topic" is the topic name, &subscriberCallback is the subscriber call back function
 ros::Publisher enc_publisher("enocoder_values", &enc_values);
 
 // ================================================================
@@ -124,7 +124,7 @@ void setup() {
   node_handle.getHardware()->setBaud(115200);
   node_handle.initNode(); // Initialize node
   node_handle.advertise(enc_publisher);
-  //node_handle.subscribe(set_point_subscriber); // Subscribe to the subscriber
+  node_handle.subscribe(set_point_subscriber); // Subscribe to the subscriber
   delay(100);    // delay 0.1 second
 }
 
@@ -144,10 +144,9 @@ void loop() {
     q_1 = Mot1.read() / C2Rad1;    // convert to radians
     q_2 = Mot2.read() / C2Rad2;    // convert to radians
 
+    float enc_val[2] = {q_1, q_2};
+    enc_values.data = enc_val;
     enc_values.data_length = 2;
-    enc_values.data[0] = q_1;
-    enc_values.data[1] = q_2;
-
 
     // ================================================================
     // ===                    CONTROLLER CODE                       ===
