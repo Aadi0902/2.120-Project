@@ -103,7 +103,7 @@ void subscriberCallback(const std_msgs::Float64MultiArray& set_point_val) {
 }
 
 ros::Subscriber<std_msgs::Float64MultiArray> set_point_subscriber("set_point_topic", &subscriberCallback); // "set_point_topic" is the topic name, &subscriberCallback is the subscriber call back function
-ros::Publisher enc_publisher("enocoder_values", &enc_values);
+ros::Publisher enc_publisher("encoder_values", &enc_values);
 
 // ================================================================
 // ===                      INITIAL SETUP                       ===
