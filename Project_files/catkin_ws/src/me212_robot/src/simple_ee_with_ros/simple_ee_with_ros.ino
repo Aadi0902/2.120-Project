@@ -30,7 +30,7 @@ int pwm_max_m1 = 125;
 int pwm_max_m2 = 255;
 
 // control sampling period
-#define period_us 50000  // microseconds (1 sec = 1000000 us)
+#define period_us 50000  // 20Hz, microseconds (1 sec = 1000000 us)
 
 
 // ================================================================
@@ -67,8 +67,9 @@ Encoder Mot2(2, 6);
 // ===               VARIABLE DEFINITION                        ===
 // ================================================================
 
-double q_1 = 0.0, pre_q_1 = 0.0; // Current and previous joint angles of the motor 1
-double q_2 = 0.0, pre_q_2 = 0.0; // Current and previous joint angles of the motor 2
+float q_1 = 0.0, pre_q_1 = 0.0; // Current and previous joint angles of the motor 1
+float q_2 = 0.0, pre_q_2 = 0.0; // Current and previous joint angles of the motor 2
+float current_1 = 0.0, current_2 = 0.0;
 double error_1, sum_error_1 = 0.0, d_error_1 = 0.0, filt_d_error_1 = 0.0, error_pre_1;
 double error_2, sum_error_2 = 0.0, d_error_2 = 0.0, filt_d_error_2 = 0.0, error_pre_2;
 
@@ -82,13 +83,7 @@ double        pwm;
 float         vc;
 double        set_point_1 = 0; // Set point (desired joint position) for motor 1
 double        set_point_2 = 0; // Set point (desired joint position) for motor 2
-double         x_e, y_e, theta; // end-effector position
-float         in_y_e = 0;
-float         in_theta = 0;
-double        q_1_ik, q_2_ik; // inverse kinematics solutions
-int           i = 0; // To generate waypoints of a path.
-int           prev_mode = -1;
-bool          reached = false;
+
 
 
 // ================================================================
@@ -96,14 +91,14 @@ bool          reached = false;
 // ================================================================
 ros::NodeHandle node_handle;
 
-std_msgs::Float64MultiArray enc_values;
+std_msgs::Float64MultiArray enc_current_values;
 void subscriberCallback(const std_msgs::Float64MultiArray& set_point_val) {
    set_point_1 = set_point_val.data[0];
    set_point_2 = set_point_val.data[1];
 }
 
 ros::Subscriber<std_msgs::Float64MultiArray> set_point_subscriber("set_point_topic", &subscriberCallback); // "set_point_topic" is the topic name, &subscriberCallback is the subscriber call back function
-ros::Publisher enc_publisher("encoder_values", &enc_values);
+ros::Publisher enc_current_publisher("encoder_current_val", &enc_current_values);
 
 // ================================================================
 // ===                      INITIAL SETUP                       ===
@@ -117,15 +112,19 @@ void setup() {
   pinMode(DIR_1, OUTPUT);
   pinMode(PWM_2, OUTPUT);
   pinMode(DIR_2, OUTPUT);
+
+  pinMode(M1FB,INPUT);
+  pinMode(M2FB,INPUT);
+  
   pinMode(_nD2,OUTPUT);
   digitalWrite(_nD2,HIGH);
   pinMode(_nSF,INPUT);
 
   node_handle.getHardware()->setBaud(115200);
   node_handle.initNode(); // Initialize node
-  node_handle.advertise(enc_publisher);
+  node_handle.advertise(enc_current_publisher);
   node_handle.subscribe(set_point_subscriber); // Subscribe to the subscriber
-  delay(100);    // delay 0.1 second
+  delay(10);    // delay 0.1 second
 }
 
 
@@ -144,9 +143,12 @@ void loop() {
     q_1 = Mot1.read() / C2Rad1;    // convert to radians
     q_2 = Mot2.read() / C2Rad2;    // convert to radians
 
-    float enc_val[2] = {q_1, q_2};
-    enc_values.data = enc_val;
-    enc_values.data_length = 2;
+    current_1 = analogRead(M1FB)*9 / 1000; // Amps
+    current_2 = analogRead(M2FB)*9 / 1000; // Amps   
+    
+    float enc_current_val[4] = {q_1, q_2, current_1, current_2};
+    enc_current_values.data = enc_current_val;
+    enc_current_values.data_length = 4;
 
     // ================================================================
     // ===                    CONTROLLER CODE                       ===
@@ -169,14 +171,11 @@ void loop() {
     sum_error_2 += error_2 * loop_time;
     error_pre_2 = error_2;
     motorControl(DIR_2, PWM_2, error_2, d_error_2, sum_error_2, Kp_2, Kd_2, Ki_2, pwm_max_m2, 2);
-
-  
-
-    i++;  // change this line to i+=2; for every 2 degrees per samping period.
+    
     //  delay(30);
     
     
-    enc_publisher.publish(&enc_values);
+    enc_current_publisher.publish(&enc_current_values);
     node_handle.spinOnce();
   }
   loop_time = (micros() - timer) / 1000000.0;  //compute actual sample time
@@ -225,4 +224,5 @@ void motorControl(int DIR_x, int PWM_x, float error, float d_error, float sum_er
     }
     analogWrite(PWM_x, (int) constrain(abs(pwm_command), 0, pwm_max));
   }
+  //delay(2);
 }

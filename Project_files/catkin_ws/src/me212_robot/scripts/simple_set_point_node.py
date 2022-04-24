@@ -30,6 +30,7 @@ set_point_1 = 0.0
 set_point_2 = 0.0
 
 set_point_pub = rospy.Publisher("set_point_topic", Float64MultiArray, queue_size=10)
+current_pub = rospy.Publisher("current_topic", Float64MultiArray, queue_size=10)
 rospy.init_node("set_point_pub_sub", anonymous=True)
 
 prev_mode = -1
@@ -42,9 +43,13 @@ tstep = 0
 cur_time = rospy.get_rostime()
 prev_time = cur_time
 
-def enc_callback(enc_values):
-    q_1 = float(enc_values.data[0])
-    q_2 = float(enc_values.data[1])
+def enc_callback(enc_current_values):
+    q_1 = float(enc_current_values.data[0])
+    q_2 = float(enc_current_values.data[1])
+
+    current_arr = Float64MultiArray()
+    current_arr.data = [float(enc_current_values.data[2]), float(enc_current_values.data[3])]
+
     global prev_mode, set_point_1, set_point_2, l_1, tstep, cur_time, prev_time, in_y_e, in_theta, y_e_up, y_e_down, theta_up, theta_down
 
     if not mode == prev_mode:
@@ -67,7 +72,10 @@ def enc_callback(enc_values):
 
     set_point_arr = Float64MultiArray()
     set_point_arr.data = [float(set_point_1), float(set_point_2), mode]
+
     set_point_pub.publish(set_point_arr)
+    current_pub.publish(current_arr)
+
     rospy.loginfo(set_point_arr)
 
     if not tstep > task_time * enc_freq:
@@ -121,7 +129,7 @@ def inverse_k(y_e, theta):
 
 
 def main():
-    rospy.Subscriber("encoder_values", Float64MultiArray, enc_callback)
+    rospy.Subscriber("encoder_current_val", Float64MultiArray, enc_callback)
     rospy.Subscriber("exec_mode", Float64MultiArray, mode_callback)
     rospy.spin()
 
