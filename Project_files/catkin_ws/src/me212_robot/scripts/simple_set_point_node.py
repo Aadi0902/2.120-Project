@@ -23,11 +23,11 @@ theta_down = -48.01*np.pi/180;
 desired_y_e = 0
 desired_theta = 0
 
-in_y_e = 0
-in_theta = 0
+in_y_e = 0.0
+in_theta = 0.0
 
-set_point_1 = 0
-set_point_2 = 0
+set_point_1 = 0.0
+set_point_2 = 0.0
 
 set_point_pub = rospy.Publisher("set_point_topic", Float64MultiArray, queue_size=10)
 rospy.init_node("set_point_pub_sub", anonymous=True)
@@ -43,9 +43,9 @@ cur_time = rospy.get_rostime()
 prev_time = cur_time
 
 def enc_callback(enc_values):
-    q_1 = enc_values.data[0]
-    q_2 = enc_values.data[1]
-    global prev_mode, set_point_1, set_point_2, l_1, tstep, cur_time, prev_time, in_y_e, in_theta
+    q_1 = float(enc_values.data[0])
+    q_2 = float(enc_values.data[1])
+    global prev_mode, set_point_1, set_point_2, l_1, tstep, cur_time, prev_time, in_y_e, in_theta, y_e_up, y_e_down, theta_up, theta_down
 
     if not mode == prev_mode:
         in_y_e = l_1 * np.sin(q_1)
@@ -75,7 +75,7 @@ def enc_callback(enc_values):
 
 def mode_callback(mode_param):
     global mode, task_time, desired_y_e, desired_theta, y_e_up, y_e_down, theta_home, theta_up, theta_down
-    mode = mode_param.data[0]
+    mode = int(mode_param.data[0])
     desired_y_e = mode_param.data[1]
     desired_theta = mode_param.data[2]
     task_time = mode_param.data[3]

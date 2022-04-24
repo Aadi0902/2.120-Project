@@ -5,12 +5,12 @@ import numpy as np
 '''
 Default values:
 '''
-y_e_up = -0.07
-y_e_down = 0.07
+y_e_up = 0.07
+y_e_down = -0.07
 y_e_home = 0
-theta_up = 48.01 * np.pi/180;
+theta_up = 48.01 * np.pi/180
 theta_home = 0
-theta_down = -48.01*np.pi/180;
+theta_down = -48.01*np.pi/180
 
 
 
