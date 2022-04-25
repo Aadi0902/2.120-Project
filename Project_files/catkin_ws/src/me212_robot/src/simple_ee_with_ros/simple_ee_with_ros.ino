@@ -84,7 +84,7 @@ float         vc;
 double        set_point_1 = 0; // Set point (desired joint position) for motor 1
 double        set_point_2 = 0; // Set point (desired joint position) for motor 2
 
-
+void(* resetFunc) (void) = 0;
 
 // ================================================================
 // ===               ROS                   ===
