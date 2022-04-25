@@ -16,6 +16,8 @@ q_2_limit = 180 * np.pi/180 # Joint angle limit for q_2
 y_e_up = 0.07
 y_e_down = -0.06
 y_e_home = 0
+y_e_carry = -0.02
+
 theta_up = 48.01 * np.pi/180;
 theta_home = 0
 theta_down = -48.01*np.pi/180;
@@ -93,7 +95,7 @@ def mode_callback(mode_param):
         theta_home = desired_theta
     elif mode == 2: # Excavate
         #mode = 2
-        y_e_down = desired_y_e
+        y_e_carry = desired_y_e
         theta_up = desired_theta
     elif mode == 3: # Straigh line up
         #mode = 3

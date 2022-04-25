@@ -8,6 +8,7 @@ Default values:
 y_e_up = 0.07
 y_e_down = -0.06
 y_e_home = 0
+y_e_carry = -0.02
 theta_up = 48.01 * np.pi/180
 theta_home = 0
 theta_down = -48.01*np.pi/180
@@ -30,13 +31,14 @@ def main():
             continue
         
         # Comment following seciton and uncomment next section for having user input instead
+        
         if mode_inp == 1: # Down position
             y_e_inp = y_e_down
             theta_inp = theta_home
             task_time_inp = 1
         elif mode_inp == 2: # Excavate
             #mode = 2
-            y_e_inp = y_e_down
+            y_e_inp = y_e_carry
             theta_inp = theta_up
             task_time_inp = 1
         elif mode_inp == 3: # Straigh line up

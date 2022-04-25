@@ -16,17 +16,17 @@
 
 // Motor 1 requires higher gains due to larger moment of inertia
 // Try 1.5 - 2.5 times the Motor 2 gains
-float Kp_1 = 150.0;
+float Kp_1 = 300.0;
 float Kd_1 = 0.0;
-float Ki_1 = 10.0;
+float Ki_1 = 5.0;
 
 // Motor 2 requires smaller gains compared to Motor 1
 // Try 3 - 5 times the gains from previous lab
-float Kp_2 = 100.0;
+float Kp_2 = 400.0;
 float Kd_2 = 0.0;
 float Ki_2 = 10.0;
 
-int pwm_max_m1 = 125;
+int pwm_max_m1 = 255;
 int pwm_max_m2 = 255;
 
 // control sampling period
@@ -143,8 +143,8 @@ void loop() {
     q_1 = Mot1.read() / C2Rad1;    // convert to radians
     q_2 = Mot2.read() / C2Rad2;    // convert to radians
 
-    current_1 = analogRead(M1FB)*9 / 1000; // Amps
-    current_2 = analogRead(M2FB)*9 / 1000; // Amps   
+    current_1 = analogRead(M1FB)*9.0 / 1000.0; // Amps
+    current_2 = analogRead(M2FB)*9.0 / 1000.0; // Amps   
 
     //float enc_current_val[4] = {q_1, q_2, set_point_1, set_point_2};
     float enc_current_val[4] = {q_1, q_2, current_1, current_2};
