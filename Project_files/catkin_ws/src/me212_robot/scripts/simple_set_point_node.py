@@ -8,13 +8,13 @@ from std_msgs.msg import Bool
 from std_msgs.msg import Int16
 
 # Variable definition
-l_1 = 0.09
-q_1_limit = 48 * np.pi/180 # Joint angle limit for q_1
-q_2_limit = 150 * np.pi/180 # Joint angle limit for q_2
+l_1 = 0.09 # Link 1 length
+q_1_limit = 75 * np.pi/180 # Joint angle limit for q_1
+q_2_limit = 180 * np.pi/180 # Joint angle limit for q_2
 
 # Default values
-y_e_up = -0.07
-y_e_down = 0.07
+y_e_up = 0.07
+y_e_down = -0.06
 y_e_home = 0
 theta_up = 48.01 * np.pi/180;
 theta_home = 0
@@ -71,7 +71,7 @@ def enc_callback(enc_current_values):
     (set_point_1, set_point_2) = inverse_k(y_e, theta)
 
     set_point_arr = Float64MultiArray()
-    set_point_arr.data = [float(set_point_1), float(set_point_2), mode]
+    set_point_arr.data = [float(set_point_1), float(set_point_2), mode, y_e, theta]
 
     set_point_pub.publish(set_point_arr)
     current_pub.publish(current_arr)
@@ -120,7 +120,7 @@ def inverse_k(y_e, theta):
     q_2_ik = theta - q_1_ik
 
     # position limit constraints (update set_point_1 and set_point_2 when they are within the limits)
-    if abs(set_point_1) < q_1_limit and abs(set_point_2) < q_2_limit:
+    if abs(q_1_ik) < q_1_limit and abs(q_2_ik) < q_2_limit:
         set_point_1 = q_1_ik
         set_point_2 = q_2_ik
     else:

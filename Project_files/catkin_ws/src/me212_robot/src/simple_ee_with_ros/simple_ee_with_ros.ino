@@ -134,8 +134,8 @@ void setup() {
 // ================================================================
 
 void loop() {
+  node_handle.subscribe(set_point_subscriber);
   if (micros() - timer >= period_us) {
-
     timer = micros();
 
     // Joint position from the encoder counts
@@ -145,8 +145,9 @@ void loop() {
 
     current_1 = analogRead(M1FB)*9 / 1000; // Amps
     current_2 = analogRead(M2FB)*9 / 1000; // Amps   
-    
-    float enc_current_val[4] = {q_1, q_2, current_1, current_2};
+
+    float enc_current_val[4] = {q_1, q_2, set_point_1, set_point_2};
+    //float enc_current_val[4] = {q_1, q_2, current_1, current_2};
     enc_current_values.data = enc_current_val;
     enc_current_values.data_length = 4;
 
@@ -176,10 +177,10 @@ void loop() {
     
     
     enc_current_publisher.publish(&enc_current_values);
-    node_handle.spinOnce();
+    //node_handle.spinOnce();
   }
   loop_time = (micros() - timer) / 1000000.0;  //compute actual sample time
-
+  node_handle.spinOnce();
 }
 
 

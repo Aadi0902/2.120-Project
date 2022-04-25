@@ -6,7 +6,7 @@ import numpy as np
 Default values:
 '''
 y_e_up = 0.07
-y_e_down = -0.07
+y_e_down = -0.06
 y_e_home = 0
 theta_up = 48.01 * np.pi/180
 theta_home = 0
@@ -36,7 +36,7 @@ def main():
             task_time_inp = 1
         elif mode_inp == 2: # Excavate
             #mode = 2
-            y_e_inp = theta_down
+            y_e_inp = y_e_down
             theta_inp = theta_up
             task_time_inp = 1
         elif mode_inp == 3: # Straigh line up
