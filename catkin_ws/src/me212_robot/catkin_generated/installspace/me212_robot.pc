@@ -1,0 +1,8 @@
+prefix=/usr/local
+
+Name: me212_robot
+Description: Description of me212_robot
+Version: 0.0.0
+Cflags: 
+Libs: -L/usr/local/lib 
+Requires: 

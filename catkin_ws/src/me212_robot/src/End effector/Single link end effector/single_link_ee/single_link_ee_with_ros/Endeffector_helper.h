@@ -1,0 +1,29 @@
+class PathPlanner {
+  public:
+    float current_mode;
+    float prev_mode = -1;
+
+    float task_time; // Time to finish the task
+
+    float lower_y_e = -0.1;
+    float upper_y_e = 0.2;
+    float theta_up = 48.01;
+    float theta_home = 0;
+    float theta_down = -48.01;
+
+    float desired_y_e;
+    float desired_theta;
+
+    float current_phi1;
+    float current_phi2;
+
+
+    
+    PathPlanner(): current_mode(1) {}
+
+    void setCurrentPos(float cur_q1, float cur_q2);
+    void set_mode(float mode);
+    
+  private: 
+    unsigned long prevSerialTime;
+};
