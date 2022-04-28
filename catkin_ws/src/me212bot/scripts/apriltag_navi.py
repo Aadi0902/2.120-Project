@@ -16,8 +16,6 @@ from apriltags.msg import AprilTagDetections
 from geometry_msgs.msg import Pose
 from helper import transformPose, pubFrame, cross2d, lookupTransform, pose2poselist, invPoselist, diffrad
 
-serialComm = serial.Serial('/dev/ttyACM0', 115200, timeout = 5)
-
 rospy.init_node('apriltag_navi', anonymous=True)
 lr = tf.TransformListener()
 br = tf.TransformBroadcaster()
