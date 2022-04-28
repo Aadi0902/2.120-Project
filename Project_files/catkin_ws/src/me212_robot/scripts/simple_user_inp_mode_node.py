@@ -1,7 +1,9 @@
 #!/usr/bin/python
 import rospy
 from std_msgs.msg import Float64MultiArray
+from std_msgs.msg import String
 import numpy as np
+import keyboard
 '''
 Default values:
 '''
@@ -18,11 +20,34 @@ theta_down = -48.01*np.pi/180
 
 def main():
     mode_pub = rospy.Publisher("exec_mode", Float64MultiArray, queue_size=10)
+    manual_pub = rospy.Publisher("manual_inp", String, queue_size=10)
     rospy.init_node("user_mode_pub",anonymous=True)
 
+    mode_inp = 1
+
     while not rospy.is_shutdown():
+        key_inp = " "
         try:
-            mode_inp = int(raw_input("Enter desired end effector mode: "))
+            event = keyboard.read_event()
+            if event.event_type == keyboard.KEY_DOWN and event.name == 'up':
+                key_inp = "w"
+            elif event.event_type == keyboard.KEY_DOWN and event.name == 'down':
+                key_inp = "s"
+            elif event.event_type == keyboard.KEY_DOWN and event.name == 'left':
+                key_inp = "a"
+            elif event.event_type == keyboard.KEY_DOWN and event.name == 'right':
+                key_inp = "d"
+            elif event.event_type == keyboard.KEY_DOWN and event.name == '1':
+                mode_inp = 1
+            elif event.event_type == keyboard.KEY_DOWN and event.name == '2':
+                mode_inp = 2
+            elif event.event_type == keyboard.KEY_DOWN and event.name == '3':
+                mode_inp = 3
+            elif event.event_type == keyboard.KEY_DOWN and event.name == '4':
+                mode_inp = 4
+            else:
+                key_inp = ' '
+            #mode_inp = int(raw_input("Enter desired end effector mode: "))
         except ValueError:
             print("INVALID INPUT, should be an integer")
             continue
@@ -80,9 +105,12 @@ def main():
         mode_param = Float64MultiArray()
         mode_param.data = [mode_inp, y_e_inp, theta_inp, task_time_inp]
 
+        key_inp_str = String()
+        key_inp_str.data = key_inp
         mode_pub.publish(mode_param)
+
+        manual_pub.publish(key_inp_str)
         rospy.loginfo(mode_param)
-    
 
 if __name__ == '__main__':
     try:
