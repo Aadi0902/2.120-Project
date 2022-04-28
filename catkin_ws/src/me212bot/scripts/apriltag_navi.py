@@ -9,9 +9,11 @@ import numpy as np
 import threading
 import serial
 import tf.transformations as tfm
+import math
 
 from me212bot.msg import WheelCmdVel
 from apriltags.msg import AprilTagDetections
+from geometry_msgs.msg import Pose
 from helper import transformPose, pubFrame, cross2d, lookupTransform, pose2poselist, invPoselist, diffrad
 
 
@@ -66,7 +68,8 @@ def navi_loop():
     rate = rospy.Rate(100) # 100hz
     
     wcv = WheelCmdVel()
-    
+    odom = rospy.Subscriber("/odom", Pose, queue_size=10)
+    pi=math.pi
     arrived = False
     arrived_position = False
     
@@ -76,8 +79,25 @@ def navi_loop():
         
         if robot_pose3d is None:
             print '1. Tag not in view, Stop'
-            wcv.desiredWV_R = 0  # right, left
-            wcv.desiredWV_L = 0
+            theta=tfm.euler_from_quaternion(odom.orientation)[2]
+            if theta<(pi/4-pi/90):
+                    # turn right
+                    wcv.desiredWV_R = -0.05  
+                    wcv.desiredWV_L = 0.05
+            elif theta>(pi/4+pi/90):
+                #  turn right
+                wcv.desiredWV_R = 0.05  
+                wcv.desiredWV_L = -0.05
+            elif theta>=(pi/4-pi/90) and theta<=(pi/4+pi/90):
+                # go to middle
+                wcv.desiredWV_R=0.1
+                wcv.desiredWV_L=0.1
+
+            elif odom.position.x>=1 and odom.position.y>=1 \
+            and odom.position.x<=1.1 and odom.position.y<=1.1:
+                # turn right
+                wcv.desiredWV_R = -0.05  
+                wcv.desiredWV_L = 0.05
             velcmd_pub.publish(wcv)  
             rate.sleep()
             continue
