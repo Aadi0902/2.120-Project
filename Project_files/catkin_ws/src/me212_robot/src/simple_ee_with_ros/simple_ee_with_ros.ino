@@ -27,7 +27,7 @@ float Kd_2 = 0.0;
 float Ki_2 = 10.0;
 
 int pwm_max_m1 = 255;
-int pwm_max_m2 = 255;
+int pwm_max_m2 = 150;
 
 // control sampling period
 #define period_us 50000  // 20Hz, microseconds (1 sec = 1000000 us)
@@ -58,7 +58,7 @@ int _nSF = 12;
 // Calibrate the conversion factor by hand.
 
 float C2Rad1 = 1080/(2*PI);
-float C2Rad2 = 98 * 12 * 4 / (2 * PI);
+float C2Rad2 = 25000 / (2 * PI);//98 * 12 * 4 / (2 * PI);
 
 Encoder Mot1(3, 5);
 Encoder Mot2(2, 6);
@@ -208,7 +208,7 @@ void motorControl(int DIR_x, int PWM_x, float error, float d_error, float sum_er
     }
     else
     {
-      digitalWrite(DIR_x, LOW);
+      digitalWrite(DIR_x, HIGH);
     }
     analogWrite(PWM_x, (int) constrain(pwm_command, 0, pwm_max));
     
@@ -221,7 +221,7 @@ void motorControl(int DIR_x, int PWM_x, float error, float d_error, float sum_er
     }
     else
     {
-      digitalWrite(DIR_x, HIGH);
+      digitalWrite(DIR_x, LOW);
     }
     analogWrite(PWM_x, (int) constrain(abs(pwm_command), 0, pwm_max));
   }
