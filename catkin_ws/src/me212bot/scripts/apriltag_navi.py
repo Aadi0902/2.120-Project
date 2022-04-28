@@ -16,6 +16,7 @@ from apriltags.msg import AprilTagDetections
 from geometry_msgs.msg import Pose
 from helper import transformPose, pubFrame, cross2d, lookupTransform, pose2poselist, invPoselist, diffrad
 
+serialComm = serial.Serial('/dev/ttyACM0', 115200, timeout = 5)
 
 rospy.init_node('apriltag_navi', anonymous=True)
 lr = tf.TransformListener()
@@ -23,7 +24,7 @@ br = tf.TransformBroadcaster()
     
 def main():
     apriltag_sub = rospy.Subscriber("/apriltags/detections", AprilTagDetections, apriltag_callback, queue_size = 1)
-    
+    odom = rospy.Subscriber("/odom", Pose, odo_callback, queue_size=1)
     rospy.sleep(1)
     
     constant_vel = False
@@ -61,6 +62,9 @@ def apriltag_callback(data):
             pubFrame(br, pose = poselist_base_map, frame_id = '/robot_base', parent_frame_id = '/map')
 
 
+def odo_callback(msg):
+    pose2poselist(msg)
+
 ## navigation control loop (No need to modify)
 def navi_loop():
     velcmd_pub = rospy.Publisher("/cmdvel", WheelCmdVel, queue_size = 1)
@@ -68,7 +72,7 @@ def navi_loop():
     rate = rospy.Rate(100) # 100hz
     
     wcv = WheelCmdVel()
-    odom = rospy.Subscriber("/odom", Pose, queue_size=10)
+    
     pi=math.pi
     arrived = False
     arrived_position = False
@@ -79,7 +83,7 @@ def navi_loop():
         
         if robot_pose3d is None:
             print '1. Tag not in view, Stop'
-            theta=tfm.euler_from_quaternion(odom.orientation)[2]
+            theta=tfm.euler_from_quaternion(odom[3:])[2]
             if theta<(pi/4-pi/90):
                     # turn right
                     wcv.desiredWV_R = -0.05  
@@ -93,8 +97,8 @@ def navi_loop():
                 wcv.desiredWV_R=0.1
                 wcv.desiredWV_L=0.1
 
-            elif odom.position.x>=1 and odom.position.y>=1 \
-            and odom.position.x<=1.1 and odom.position.y<=1.1:
+            elif odom[0]>=1 and odom[1]>=1 \
+            and odom[0]<=1.1 and odom[1]<=1.1:
                 # turn right
                 wcv.desiredWV_R = -0.05  
                 wcv.desiredWV_L = 0.05

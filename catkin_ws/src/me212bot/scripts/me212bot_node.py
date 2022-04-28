@@ -38,6 +38,8 @@ def cmdvel_callback(msg):
 # read_odometry_loop() is for reading odometry from Arduino and publish to rostopic. (No need to modify)
 def read_odometry_loop():
     prevtime = rospy.Time.now()
+    odometry = rospy.Publisher("/odom", Pose, queue_size=1)
+    rate = rospy.Rate(100)
     while not rospy.is_shutdown():
         # get a line of string that represent current odometry from serial
         serialData = serialComm.readline()
@@ -63,6 +65,7 @@ def read_odometry_loop():
             
             qtuple = tfm.quaternion_from_euler(0, 0, theta)
             odom.orientation = Quaternion(qtuple[0], qtuple[1], qtuple[2], qtuple[3])
+            odometry.publish(odom)
         except:
             # print out msg if there is an error parsing a serial msg
             print 'Cannot parse', splitData
