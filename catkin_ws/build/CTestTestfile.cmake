@@ -7,3 +7,4 @@
 subdirs(gtest)
 subdirs(me212bot)
 subdirs(apriltags)
+subdirs(orb_slam_2_ros)
