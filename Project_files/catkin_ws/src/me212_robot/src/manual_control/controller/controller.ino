@@ -117,13 +117,13 @@ void drive_backwards() {
 }
 
 void drive_cw() {
-  VL = 50;
-  VR = -50;
+  VL = 35;
+  VR = -35;
 }
 
 void drive_ccw() {
-  VL = -50;
-  VR = 50;
+  VL = -35;
+  VR = 35;
 }
 
 void stall(){
