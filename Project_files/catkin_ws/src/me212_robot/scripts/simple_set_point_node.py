@@ -13,8 +13,8 @@ q_1_limit = 75 * np.pi/180 # Joint angle limit for q_1
 q_2_limit = 180 * np.pi/180 # Joint angle limit for q_2
 
 # Default values
-y_e_up = 0.07
-y_e_down = -0.06
+y_e_up = 0.06
+y_e_down = -0.055
 y_e_home = 0
 y_e_carry = -0.02
 
@@ -60,7 +60,7 @@ def enc_callback(enc_current_values):
         prev_mode = mode
         tstep = 1
 
-    if mode > 4 or mode < 1:
+    if mode > 5 or mode < 1:
         y_e = in_y_e
         theta = in_theta
     else:
@@ -105,6 +105,9 @@ def mode_callback(mode_param):
         #mode = 4
         y_e_up = desired_y_e
         theta_down = desired_theta
+    else:
+        theta_home = 0#desired_theta
+        y_e_home = 0#desired_y_e
     
     rospy.loginfo(mode)
 

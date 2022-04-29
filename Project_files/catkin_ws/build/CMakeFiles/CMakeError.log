@@ -1,24 +1,24 @@
 Determining if the pthread_create exist failed with the following output:
-Change Dir: /home/robot/Documents/2.120-Project/Project_files/catkin_ws/build/CMakeFiles/CMakeTmp
+Change Dir: /home/robot/2.120-Project/Project_files/catkin_ws/build/CMakeFiles/CMakeTmp
 
-Run Build Command:"/usr/bin/make" "cmTC_ce07b/fast"
-/usr/bin/make -f CMakeFiles/cmTC_ce07b.dir/build.make CMakeFiles/cmTC_ce07b.dir/build
-make[1]: Entering directory '/home/robot/Documents/2.120-Project/Project_files/catkin_ws/build/CMakeFiles/CMakeTmp'
-Building C object CMakeFiles/cmTC_ce07b.dir/CheckSymbolExists.c.o
-/usr/bin/cc    -Wreturn-type -Wuninitialized     -o CMakeFiles/cmTC_ce07b.dir/CheckSymbolExists.c.o   -c /home/robot/Documents/2.120-Project/Project_files/catkin_ws/build/CMakeFiles/CMakeTmp/CheckSymbolExists.c
-Linking C executable cmTC_ce07b
-/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_ce07b.dir/link.txt --verbose=1
-/usr/bin/cc   -Wreturn-type -Wuninitialized      CMakeFiles/cmTC_ce07b.dir/CheckSymbolExists.c.o  -o cmTC_ce07b -rdynamic 
-CMakeFiles/cmTC_ce07b.dir/CheckSymbolExists.c.o: In function `main':
+Run Build Command:"/usr/bin/make" "cmTC_68194/fast"
+/usr/bin/make -f CMakeFiles/cmTC_68194.dir/build.make CMakeFiles/cmTC_68194.dir/build
+make[1]: Entering directory '/home/robot/2.120-Project/Project_files/catkin_ws/build/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_68194.dir/CheckSymbolExists.c.o
+/usr/bin/cc     -o CMakeFiles/cmTC_68194.dir/CheckSymbolExists.c.o   -c /home/robot/2.120-Project/Project_files/catkin_ws/build/CMakeFiles/CMakeTmp/CheckSymbolExists.c
+Linking C executable cmTC_68194
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_68194.dir/link.txt --verbose=1
+/usr/bin/cc       CMakeFiles/cmTC_68194.dir/CheckSymbolExists.c.o  -o cmTC_68194 -rdynamic 
+CMakeFiles/cmTC_68194.dir/CheckSymbolExists.c.o: In function `main':
 CheckSymbolExists.c:(.text+0x16): undefined reference to `pthread_create'
 collect2: error: ld returned 1 exit status
-CMakeFiles/cmTC_ce07b.dir/build.make:97: recipe for target 'cmTC_ce07b' failed
-make[1]: *** [cmTC_ce07b] Error 1
-make[1]: Leaving directory '/home/robot/Documents/2.120-Project/Project_files/catkin_ws/build/CMakeFiles/CMakeTmp'
-Makefile:126: recipe for target 'cmTC_ce07b/fast' failed
-make: *** [cmTC_ce07b/fast] Error 2
+CMakeFiles/cmTC_68194.dir/build.make:97: recipe for target 'cmTC_68194' failed
+make[1]: *** [cmTC_68194] Error 1
+make[1]: Leaving directory '/home/robot/2.120-Project/Project_files/catkin_ws/build/CMakeFiles/CMakeTmp'
+Makefile:126: recipe for target 'cmTC_68194/fast' failed
+make: *** [cmTC_68194/fast] Error 2
 
-File /home/robot/Documents/2.120-Project/Project_files/catkin_ws/build/CMakeFiles/CMakeTmp/CheckSymbolExists.c:
+File /home/robot/2.120-Project/Project_files/catkin_ws/build/CMakeFiles/CMakeTmp/CheckSymbolExists.c:
 /* */
 #include <pthread.h>
 
@@ -34,22 +34,22 @@ int main(int argc, char** argv)
 }
 
 Determining if the function pthread_create exists in the pthreads failed with the following output:
-Change Dir: /home/robot/Documents/2.120-Project/Project_files/catkin_ws/build/CMakeFiles/CMakeTmp
+Change Dir: /home/robot/2.120-Project/Project_files/catkin_ws/build/CMakeFiles/CMakeTmp
 
-Run Build Command:"/usr/bin/make" "cmTC_a9c23/fast"
-/usr/bin/make -f CMakeFiles/cmTC_a9c23.dir/build.make CMakeFiles/cmTC_a9c23.dir/build
-make[1]: Entering directory '/home/robot/Documents/2.120-Project/Project_files/catkin_ws/build/CMakeFiles/CMakeTmp'
-Building C object CMakeFiles/cmTC_a9c23.dir/CheckFunctionExists.c.o
-/usr/bin/cc    -Wreturn-type -Wuninitialized  -DCHECK_FUNCTION_EXISTS=pthread_create   -o CMakeFiles/cmTC_a9c23.dir/CheckFunctionExists.c.o   -c /usr/share/cmake-3.5/Modules/CheckFunctionExists.c
-Linking C executable cmTC_a9c23
-/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_a9c23.dir/link.txt --verbose=1
-/usr/bin/cc   -Wreturn-type -Wuninitialized  -DCHECK_FUNCTION_EXISTS=pthread_create    CMakeFiles/cmTC_a9c23.dir/CheckFunctionExists.c.o  -o cmTC_a9c23 -rdynamic -lpthreads 
+Run Build Command:"/usr/bin/make" "cmTC_44d19/fast"
+/usr/bin/make -f CMakeFiles/cmTC_44d19.dir/build.make CMakeFiles/cmTC_44d19.dir/build
+make[1]: Entering directory '/home/robot/2.120-Project/Project_files/catkin_ws/build/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_44d19.dir/CheckFunctionExists.c.o
+/usr/bin/cc    -DCHECK_FUNCTION_EXISTS=pthread_create   -o CMakeFiles/cmTC_44d19.dir/CheckFunctionExists.c.o   -c /usr/share/cmake-3.5/Modules/CheckFunctionExists.c
+Linking C executable cmTC_44d19
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_44d19.dir/link.txt --verbose=1
+/usr/bin/cc   -DCHECK_FUNCTION_EXISTS=pthread_create    CMakeFiles/cmTC_44d19.dir/CheckFunctionExists.c.o  -o cmTC_44d19 -rdynamic -lpthreads 
 /usr/bin/ld: cannot find -lpthreads
 collect2: error: ld returned 1 exit status
-CMakeFiles/cmTC_a9c23.dir/build.make:97: recipe for target 'cmTC_a9c23' failed
-make[1]: *** [cmTC_a9c23] Error 1
-make[1]: Leaving directory '/home/robot/Documents/2.120-Project/Project_files/catkin_ws/build/CMakeFiles/CMakeTmp'
-Makefile:126: recipe for target 'cmTC_a9c23/fast' failed
-make: *** [cmTC_a9c23/fast] Error 2
+CMakeFiles/cmTC_44d19.dir/build.make:97: recipe for target 'cmTC_44d19' failed
+make[1]: *** [cmTC_44d19] Error 1
+make[1]: Leaving directory '/home/robot/2.120-Project/Project_files/catkin_ws/build/CMakeFiles/CMakeTmp'
+Makefile:126: recipe for target 'cmTC_44d19/fast' failed
+make: *** [cmTC_44d19/fast] Error 2
 
 

@@ -83,25 +83,6 @@ class PIController {
     const float Kiv1 = 10000,    Kiv2 = 10000;     // I gain for motor 1 and 2
 };
 
-class SerialComm {
-  public:
-    SerialComm(){
-        prevSerialTime = micros();
-    }
-    void send(const RobotPose& robotPose) {
-        unsigned long current_time = micros();
-        if (current_time - prevSerialTime >= SERIAL_PERIOD_MICROS) {
-            Serial.print("#,");
-            Serial.print(robotPose.X, 6);   Serial.print(",");  //X 
-            Serial.print(robotPose.Y, 6);   Serial.print(",");  //Y 
-            Serial.print(robotPose.Th);                         //Th
-            Serial.print(",#\n");
-            prevSerialTime = current_time;
-        }
-    }
-  private: 
-    unsigned long prevSerialTime;
-};
 
 class PathPlanner {
   public:

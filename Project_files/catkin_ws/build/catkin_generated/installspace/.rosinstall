@@ -1,2 +1,2 @@
 - setup-file:
-    local-name: /home/robot/Documents/2.120-Project/Project_files/catkin_ws/install/setup.sh
+    local-name: /home/robot/2.120-Project/Project_files/catkin_ws/install/setup.sh

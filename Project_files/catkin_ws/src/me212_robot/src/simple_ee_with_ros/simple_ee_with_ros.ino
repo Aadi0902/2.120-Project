@@ -7,7 +7,8 @@
 
 
 
-// rosrun rosserial_python serial_node.py _port:=/dev/ttyACM0 _baud:=115200
+// rosrun rosserial_python serial_node.py __name:="node2" _port:=/dev/ttyACM3 _baud:=115200
+
 // ================================================================
 // ===               PID FEEDBACK CONTROLLER                    ===
 // ================================================================
@@ -60,8 +61,8 @@ int _nSF = 12;
 float C2Rad1 = 1080/(2*PI);
 float C2Rad2 = 25000 / (2 * PI);//98 * 12 * 4 / (2 * PI);
 
-Encoder Mot1(3, 5);
-Encoder Mot2(2, 6);
+Encoder Mot1(2, 6);
+Encoder Mot2(3, 5);
 
 // ================================================================
 // ===               VARIABLE DEFINITION                        ===
@@ -95,6 +96,7 @@ std_msgs::Float64MultiArray enc_current_values;
 void subscriberCallback(const std_msgs::Float64MultiArray& set_point_val) {
    set_point_1 = set_point_val.data[0];
    set_point_2 = set_point_val.data[1];
+   node_handle.loginfo("Received value");
 }
 
 ros::Subscriber<std_msgs::Float64MultiArray> set_point_subscriber("set_point_topic", &subscriberCallback); // "set_point_topic" is the topic name, &subscriberCallback is the subscriber call back function
@@ -141,7 +143,7 @@ void loop() {
     // Joint position from the encoder counts
 
     q_1 = Mot1.read() / C2Rad1;    // convert to radians
-    q_2 = Mot2.read() / C2Rad2;    // convert to radians
+    q_2 = -Mot2.read() / C2Rad2;    // convert to radians
 
     current_1 = analogRead(M1FB)*9.0 / 1000.0; // Amps
     current_2 = analogRead(M2FB)*9.0 / 1000.0; // Amps   

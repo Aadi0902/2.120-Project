@@ -1,9 +1,12 @@
+
 // Zack Bright        - zbright  _ mit _ edu,    Sept 2015
 // Daniel J. Gonzalez - dgonz    _ mit _ edu,    Sept 2015
 // Fangzhou Xia       - xiafz    _ mit _ edu,    Sept 2015
 // Peter KT Yu        - peterkty _ mit _ edu,    Sept 2016
 // Ryan Fish          - fishr    _ mit _ edu,    Sept 2016
 // Jerry Ng           - jerryng  _ mit _ edu,    Feb  2019
+
+// rosrun rosserial_python serial_node.py __name:="node1" _port:=/dev/ttyACM4 _baud:=115200
 
 #include "Arduino.h"
 #include "helper.h"
@@ -14,11 +17,11 @@
 EncoderMeasurement  encoder(26);      // FIX THIS: encoder handler class, set the motor type 53 or 26 here
 RobotPose           robotPose;        // robot position and orientation calculation class
 PIController        wheelVelCtrl;     // velocity PI controller class
-SerialComm          serialComm;       // serial communication class
+//SerialComm          serialComm;       // serial communication class
 PathPlanner         pathPlanner;      // path planner
 unsigned long       prevTime = 0;
 
-char c = '';
+char c[5];
 ros::NodeHandle node_handle;
 
 float VL = 0;
@@ -28,12 +31,20 @@ boolean usePathPlanner = false;
 
 // ROS
 void subscriberCallback(const std_msgs::String& inp) {
-  c = inp.toCharArray()[0]
+  String tempStr = inp.data;
+  tempStr.toCharArray(c,5);
+  node_handle.loginfo("Received value");
 }
 ros::Subscriber<std_msgs::String> char_subscriber("manual_inp", &subscriberCallback);
 
+void drive_forwards();
+void drive_backwards();
+void drive_ccw();
+void drive_cw();
+void stall();
+
 void setup() {
-    Serial.begin(115200);       // initialize Serial Communication
+    node_handle.getHardware()->setBaud(115200);
     encoder.init();  // connect with encoder
     wheelVelCtrl.init();        // connect with motor
     node_handle.initNode();
@@ -56,25 +67,31 @@ void loop() {
         robotPose.update(encoder.dPhiL, encoder.dPhiR); 
 
         // 3. Send robot odometry through serial port
-        serialComm.send(robotPose); 
-  
+        //serialComm.send(robotPose); 
+
+
         // 4. Compute desired wheel velocity without or with motion planner
         if (!usePathPlanner) {
         // 4.1 wheel speed depends on keys pressed
-            if (c == 'w'){
+            if (c[0] == 'w'){
               drive_forwards();
-            } else if (c == 's'){
+              node_handle.loginfo("Forwards");
+            } else if (c[0] == 's'){
               drive_backwards();
-            } else if (c == 'a'){
+              node_handle.loginfo("Backwards");
+            } else if (c[0] == 'a'){
               drive_ccw();
-            } else if (c == 'd'){
+              node_handle.loginfo("Left");
+            } else if (c[0] == 'd'){
               drive_cw(); 
-            } else if (c == ' '){
+              node_handle.loginfo("Right");
+            } else if (c[0] == ' '){
               stall();
+              node_handle.loginfo("Stopp");
             }
           pathPlanner.desiredWV_R = VR;   
           pathPlanner.desiredWV_L = VL;
-       
+        }
         else{
             // 4.2 compute wheel speed from using a navigation policy
             pathPlanner.navigateTrajU(robotPose); 
@@ -86,16 +103,17 @@ void loop() {
 
         prevTime = currentTime; // update time
     } 
+    node_handle.spinOnce();
 }
 
 void drive_forwards() {
-  VL = 100;
-  VR = 100;
+  VL = 25;
+  VR = 25;
 }
 
 void drive_backwards() {
-  VL = -100;
-  VR = -100;
+  VL = -25;
+  VR = -25;
 }
 
 void drive_cw() {

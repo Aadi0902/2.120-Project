@@ -1,8 +1,8 @@
-# Install script for directory: /usr/src/gmock
+# Install script for directory: /usr/src/gtest
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
-  set(CMAKE_INSTALL_PREFIX "/home/robot/Documents/2.120-Project/Project_files/catkin_ws/install")
+  set(CMAKE_INSTALL_PREFIX "/home/robot/2.120-Project/Project_files/catkin_ws/install")
 endif()
 string(REGEX REPLACE "/$" "" CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 
@@ -30,11 +30,5 @@ endif()
 # Install shared libraries without execute permission?
 if(NOT DEFINED CMAKE_INSTALL_SO_NO_EXE)
   set(CMAKE_INSTALL_SO_NO_EXE "1")
-endif()
-
-if(NOT CMAKE_INSTALL_LOCAL_ONLY)
-  # Include the install script for each subdirectory.
-  include("/home/robot/Documents/2.120-Project/Project_files/catkin_ws/build/gtest/gtest/cmake_install.cmake")
-
 endif()
 
