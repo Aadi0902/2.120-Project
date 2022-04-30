@@ -107,23 +107,23 @@ void loop() {
 }
 
 void drive_forwards() {
-  VL = 25;
-  VR = 25;
+  VL = 1;
+  VR = 1;
 }
 
 void drive_backwards() {
-  VL = -25;
-  VR = -25;
+  VL = -1;
+  VR = -1;
 }
 
 void drive_cw() {
-  VL = 35;
-  VR = -35;
+  VL = 0.3;
+  VR = -0.3;
 }
 
 void drive_ccw() {
-  VL = -35;
-  VR = 35;
+  VL = -0.3;
+  VR = 0.3;
 }
 
 void stall(){

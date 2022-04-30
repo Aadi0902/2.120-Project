@@ -8,10 +8,10 @@ from pynput.keyboard import Key, Listener
 Default values:
 '''
 y_e_up = 0.06
-y_e_down = -0.055
+y_e_down = -0.065
 y_e_home = 0
 y_e_carry = -0.02
-theta_up = 48.01 * np.pi/180
+theta_up = 30 * np.pi/180
 theta_home = 0
 theta_down = -48.01*np.pi/180
 

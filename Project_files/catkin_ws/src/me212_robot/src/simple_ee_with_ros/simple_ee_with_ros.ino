@@ -7,7 +7,7 @@
 
 
 
-// rosrun rosserial_python serial_node.py __name:="node2" _port:=/dev/ttyACM3 _baud:=115200
+// rosrun rosserial_python serial_node.py __name:="node2" _port:=/dev/ttyACM1 _baud:=115200
 
 // ================================================================
 // ===               PID FEEDBACK CONTROLLER                    ===
