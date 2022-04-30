@@ -91,6 +91,7 @@ void PathPlanner::navigateTrajU(const RobotPose & robotPose) {
     bool collected = false;
     float robotVel, K;
     int robotCase;
+    time_t collectionTime;
 
     if (robotPose.X<.1 && robotPose.Y<.1):
     // in starting box
@@ -118,8 +119,8 @@ void PathPlanner::navigateTrajU(const RobotPose & robotPose) {
         
     }
     else if (robotCase==2) {
-        robotVel=.1, K=1/b
-        // turn left to 45
+        robotVel=.1, K=-1/b
+        // turn right to 135
         if (abs(robotPose.Th-3*PI/4)<=PI/90) {
             robotCase=3
         }
@@ -149,14 +150,55 @@ void PathPlanner::navigateTrajU(const RobotPose & robotPose) {
     //     robotVel = .1, K=-1/b
         
     else if (robotCase==4) {
-        robotVel =.1 K=1/b
+        robotVel =.1, K=1/b
         if (abs(robotPose.Th-PI/4)<=PI/90) {
             // collected regolith, back to the middle, turning to 45
             robotCase= 5
         }
     }
     else if (robotCase==5) {
+        robotVel=.3,K=0
+        if (abs(robotPose.X-2.2)<.15) {
+            // time to turn right to bin
+            robotCase=6
+        }
+    }
+    else if (robotCase==6) {
+        robotVel=.1, K=-1/b
+        if (abs(robotPose.th-PI/2)<=PI/90) {
+            robotCase=7
+        }
+    }
+    else if (robotCase==7) {
+        robotVel=.1, K=0
+        if (robotPose.X==2.4) {
+            robotCase=8
+            collectionTime=time(0)
+        }
 
+    }
+    else if (robotCase==8 and abs(collectionTime-time(0))>=30) {
+        robotVel=-.1, K=0
+        if (abs(robotPose.X-2.2)<.15) {
+            // time to turn right to bin
+            robotCase=9
+        }
+
+    }
+
+    else if (robotCase==9) {
+        robotVel=.1, K=-1/b
+        if (abs(robotPose.Th-PI/4)==PI/90) {
+            robotCase=10
+        }
+
+    }
+
+    else if (robotCase==10) {
+        robotVel=-.5 K=0
+        if (abs(robotPose.Y-1.1)<.1 and abs(robotPose.X-1.1)<.1) {
+            robotCase==2
+        }
     }
     // Straight line forward
     // if (robotPose.pathDistance < 1.0) { 
