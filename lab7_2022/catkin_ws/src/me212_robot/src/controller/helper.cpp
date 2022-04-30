@@ -95,27 +95,30 @@ void PathPlanner::navigateTrajU(const RobotPose & robotPose) {
 
     if (robotPose.X<.1 && robotPose.Y<.1):
     // in starting box
-        robotCase=1
+        
+        if (abs(robotPose.Th-PI/4)<=PI/90) {
+            robotCase=1
+        }
         if (robotPose.Th<PI/4) {
             float robotVel = .1 K=-1/b
         }
-        else if (robot.Pose>PI/4) {
+        else (robot.Pose>PI/4) {
             float robotVel = .1 K=1/b
         }
-        else {
-            float robotVel =.5 K=0
-        }
+        
 
 
     // if (robotPose.Th < PI/4 ) {
     //     float robotVel = .5, K=1/b
     //     updateDesiredV(robotVel, K);
     // }
-    else if (robotPose.X<1.1 && robotPose.Y<1.1) {
+    else if (robotCase==1) {
         //drive from start box to middle
-        robotCase = 2
-        robotVel= .5 K=0
-        updateDesiredV(robotVel, K);
+        
+        robotVel= .5, K=0
+        if (abs(robotPose.X-1.1)<=1 && abs(robotPose.Y-1.1)<=.1) {
+            robotCase=2
+        }
         
     }
     else if (robotCase==2) {
@@ -157,7 +160,7 @@ void PathPlanner::navigateTrajU(const RobotPose & robotPose) {
         }
     }
     else if (robotCase==5) {
-        robotVel=.3,K=0
+        robotVel=.3, K=0
         if (abs(robotPose.X-2.2)<.15) {
             // time to turn right to bin
             robotCase=6
@@ -197,11 +200,14 @@ void PathPlanner::navigateTrajU(const RobotPose & robotPose) {
     }
 
     else if (robotCase==10) {
-        robotVel=-.5 K=0
+        robotVel=-.5, K=0
         // reverse to middle
         if (abs(robotPose.Y-1.1)<.1 && abs(robotPose.X-1.1)<.1) {
             robotCase==2
         }
+    }
+    else {
+        robotVel=0, K=0
     }
     // Straight line forward
     // if (robotPose.pathDistance < 1.0) { 
