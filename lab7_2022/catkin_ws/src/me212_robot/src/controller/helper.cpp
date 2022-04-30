@@ -111,7 +111,7 @@ void PathPlanner::navigateTrajU(const RobotPose & robotPose) {
     //     float robotVel = .5, K=1/b
     //     updateDesiredV(robotVel, K);
     // }
-    else if (robotPose.X<1.1 && && robotPose.Y<1.1) {
+    else if (robotPose.X<1.1 && robotPose.Y<1.1) {
         //drive from start box to middle
         robotCase = 2
         robotVel= .5 K=0
@@ -129,7 +129,7 @@ void PathPlanner::navigateTrajU(const RobotPose & robotPose) {
     else if (robotCase==3) {
         robotVel=-.5, K=0
         // reverse to middle
-        if (abs(robotPose.Y-1.1)<.1 and abs(robotPose.X-1.1)<.1) {
+        if (abs(robotPose.Y-1.1)<.1 && abs(robotPose.X-1.1)<.1) {
             //collected regolith, back to middle
             robotCase=4
         }
@@ -178,7 +178,7 @@ void PathPlanner::navigateTrajU(const RobotPose & robotPose) {
         }
 
     }
-    else if (robotCase==8 and abs(collectionTime-time(0))>=30) {
+    else if (robotCase==8 && abs(collectionTime-time(0))>=30) {
         robotVel=-.1, K=0
         if (abs(robotPose.X-2.2)<.15) {
             // drive back to x=2.2
@@ -199,7 +199,7 @@ void PathPlanner::navigateTrajU(const RobotPose & robotPose) {
     else if (robotCase==10) {
         robotVel=-.5 K=0
         // reverse to middle
-        if (abs(robotPose.Y-1.1)<.1 and abs(robotPose.X-1.1)<.1) {
+        if (abs(robotPose.Y-1.1)<.1 && abs(robotPose.X-1.1)<.1) {
             robotCase==2
         }
     }
