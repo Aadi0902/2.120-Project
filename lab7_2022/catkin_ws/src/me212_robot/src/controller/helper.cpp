@@ -170,6 +170,7 @@ void PathPlanner::navigateTrajU(const RobotPose & robotPose) {
         }
     }
     else if (robotCase==7) {
+        // drive to bin
         robotVel=.1, K=0
         if (robotPose.X==2.4) {
             robotCase=8
@@ -180,7 +181,7 @@ void PathPlanner::navigateTrajU(const RobotPose & robotPose) {
     else if (robotCase==8 and abs(collectionTime-time(0))>=30) {
         robotVel=-.1, K=0
         if (abs(robotPose.X-2.2)<.15) {
-            // time to turn right to bin
+            // drive back to x=2.2
             robotCase=9
         }
 
@@ -188,6 +189,7 @@ void PathPlanner::navigateTrajU(const RobotPose & robotPose) {
 
     else if (robotCase==9) {
         robotVel=.1, K=-1/b
+        // turn left to 45
         if (abs(robotPose.Th-PI/4)==PI/90) {
             robotCase=10
         }
@@ -196,6 +198,7 @@ void PathPlanner::navigateTrajU(const RobotPose & robotPose) {
 
     else if (robotCase==10) {
         robotVel=-.5 K=0
+        // reverse to middle
         if (abs(robotPose.Y-1.1)<.1 and abs(robotPose.X-1.1)<.1) {
             robotCase==2
         }
