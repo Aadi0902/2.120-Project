@@ -1,7 +1,7 @@
 file(REMOVE_RECURSE
   "CMakeFiles/apriltags_generate_messages_cpp"
-  "/home/robot/2.120-project/catkin_ws/devel/include/apriltags/AprilTagDetection.h"
-  "/home/robot/2.120-project/catkin_ws/devel/include/apriltags/AprilTagDetections.h"
+  "/home/robot/Desktop/2.120-Project/catkin_ws/devel/include/apriltags/AprilTagDetections.h"
+  "/home/robot/Desktop/2.120-Project/catkin_ws/devel/include/apriltags/AprilTagDetection.h"
 )
 
 # Per-language clean rules from dependency scanning.

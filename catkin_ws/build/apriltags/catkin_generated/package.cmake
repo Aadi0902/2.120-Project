@@ -10,4 +10,7 @@ set(apriltags_EXEC_DEPENDS "message_runtime" "cgal" "cv_bridge" "geometry_msgs" 
 set(apriltags_RUN_DEPENDS "message_runtime" "cgal" "cv_bridge" "geometry_msgs" "image_transport" "libopencv-dev" "roscpp" "sensor_msgs" "std_msgs" "visualization_msgs" "apriltagscpp" "yaml-cpp")
 set(apriltags_TEST_DEPENDS )
 set(apriltags_DOC_DEPENDS )
+set(apriltags_URL_WEBSITE "")
+set(apriltags_URL_BUGTRACKER "")
+set(apriltags_URL_REPOSITORY "https://github.com/personalrobotics/apriltags")
 set(apriltags_DEPRECATED "")

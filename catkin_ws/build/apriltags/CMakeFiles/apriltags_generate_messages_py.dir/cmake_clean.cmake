@@ -1,8 +1,8 @@
 file(REMOVE_RECURSE
   "CMakeFiles/apriltags_generate_messages_py"
-  "/home/robot/2.120-project/catkin_ws/devel/lib/python2.7/dist-packages/apriltags/msg/_AprilTagDetection.py"
-  "/home/robot/2.120-project/catkin_ws/devel/lib/python2.7/dist-packages/apriltags/msg/_AprilTagDetections.py"
-  "/home/robot/2.120-project/catkin_ws/devel/lib/python2.7/dist-packages/apriltags/msg/__init__.py"
+  "/home/robot/Desktop/2.120-Project/catkin_ws/devel/lib/python2.7/dist-packages/apriltags/msg/_AprilTagDetections.py"
+  "/home/robot/Desktop/2.120-Project/catkin_ws/devel/lib/python2.7/dist-packages/apriltags/msg/_AprilTagDetection.py"
+  "/home/robot/Desktop/2.120-Project/catkin_ws/devel/lib/python2.7/dist-packages/apriltags/msg/__init__.py"
 )
 
 # Per-language clean rules from dependency scanning.

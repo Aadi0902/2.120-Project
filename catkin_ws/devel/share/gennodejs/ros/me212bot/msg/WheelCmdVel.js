@@ -5,44 +5,60 @@
 
 "use strict";
 
-let _serializer = require('../base_serialize.js');
-let _deserializer = require('../base_deserialize.js');
-let _finder = require('../find.js');
+const _serializer = _ros_msg_utils.Serialize;
+const _arraySerializer = _serializer.Array;
+const _deserializer = _ros_msg_utils.Deserialize;
+const _arrayDeserializer = _deserializer.Array;
+const _finder = _ros_msg_utils.Find;
+const _getByteLength = _ros_msg_utils.getByteLength;
 
 //-----------------------------------------------------------
 
 class WheelCmdVel {
-  constructor() {
-    this.desiredWV_R = 0.0;
-    this.desiredWV_L = 0.0;
+  constructor(initObj={}) {
+    if (initObj === null) {
+      // initObj === null is a special case for deserialization where we don't initialize fields
+      this.desiredWV_R = null;
+      this.desiredWV_L = null;
+    }
+    else {
+      if (initObj.hasOwnProperty('desiredWV_R')) {
+        this.desiredWV_R = initObj.desiredWV_R
+      }
+      else {
+        this.desiredWV_R = 0.0;
+      }
+      if (initObj.hasOwnProperty('desiredWV_L')) {
+        this.desiredWV_L = initObj.desiredWV_L
+      }
+      else {
+        this.desiredWV_L = 0.0;
+      }
+    }
   }
 
-  static serialize(obj, bufferInfo) {
+  static serialize(obj, buffer, bufferOffset) {
     // Serializes a message object of type WheelCmdVel
     // Serialize message field [desiredWV_R]
-    bufferInfo = _serializer.float32(obj.desiredWV_R, bufferInfo);
+    bufferOffset = _serializer.float32(obj.desiredWV_R, buffer, bufferOffset);
     // Serialize message field [desiredWV_L]
-    bufferInfo = _serializer.float32(obj.desiredWV_L, bufferInfo);
-    return bufferInfo;
+    bufferOffset = _serializer.float32(obj.desiredWV_L, buffer, bufferOffset);
+    return bufferOffset;
   }
 
-  static deserialize(buffer) {
+  static deserialize(buffer, bufferOffset=[0]) {
     //deserializes a message object of type WheelCmdVel
-    let tmp;
     let len;
-    let data = new WheelCmdVel();
+    let data = new WheelCmdVel(null);
     // Deserialize message field [desiredWV_R]
-    tmp = _deserializer.float32(buffer);
-    data.desiredWV_R = tmp.data;
-    buffer = tmp.buffer;
+    data.desiredWV_R = _deserializer.float32(buffer, bufferOffset);
     // Deserialize message field [desiredWV_L]
-    tmp = _deserializer.float32(buffer);
-    data.desiredWV_L = tmp.data;
-    buffer = tmp.buffer;
-    return {
-      data: data,
-      buffer: buffer
-    }
+    data.desiredWV_L = _deserializer.float32(buffer, bufferOffset);
+    return data;
+  }
+
+  static getMessageSize(object) {
+    return 8;
   }
 
   static datatype() {
@@ -64,6 +80,28 @@ class WheelCmdVel {
     `;
   }
 
+  static Resolve(msg) {
+    // deep-construct a valid message object instance of whatever was passed in
+    if (typeof msg !== 'object' || msg === null) {
+      msg = {};
+    }
+    const resolved = new WheelCmdVel(null);
+    if (msg.desiredWV_R !== undefined) {
+      resolved.desiredWV_R = msg.desiredWV_R;
+    }
+    else {
+      resolved.desiredWV_R = 0.0
+    }
+
+    if (msg.desiredWV_L !== undefined) {
+      resolved.desiredWV_L = msg.desiredWV_L;
+    }
+    else {
+      resolved.desiredWV_L = 0.0
+    }
+
+    return resolved;
+    }
 };
 
 module.exports = WheelCmdVel;

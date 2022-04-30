@@ -5,72 +5,107 @@
 
 "use strict";
 
-let _serializer = require('../base_serialize.js');
-let _deserializer = require('../base_deserialize.js');
-let _finder = require('../find.js');
-let std_msgs = _finder('std_msgs');
+const _serializer = _ros_msg_utils.Serialize;
+const _arraySerializer = _serializer.Array;
+const _deserializer = _ros_msg_utils.Deserialize;
+const _arrayDeserializer = _deserializer.Array;
+const _finder = _ros_msg_utils.Find;
+const _getByteLength = _ros_msg_utils.getByteLength;
 let geometry_msgs = _finder('geometry_msgs');
+let std_msgs = _finder('std_msgs');
 
 //-----------------------------------------------------------
 
 class AprilTagDetection {
-  constructor() {
-    this.header = new std_msgs.msg.Header();
-    this.id = 0;
-    this.corners2d = new Array(4).fill(new geometry_msgs.msg.Point32());
-    this.tag_size = 0.0;
-    this.pose = new geometry_msgs.msg.Pose();
+  constructor(initObj={}) {
+    if (initObj === null) {
+      // initObj === null is a special case for deserialization where we don't initialize fields
+      this.header = null;
+      this.id = null;
+      this.corners2d = null;
+      this.tag_size = null;
+      this.pose = null;
+    }
+    else {
+      if (initObj.hasOwnProperty('header')) {
+        this.header = initObj.header
+      }
+      else {
+        this.header = new std_msgs.msg.Header();
+      }
+      if (initObj.hasOwnProperty('id')) {
+        this.id = initObj.id
+      }
+      else {
+        this.id = 0;
+      }
+      if (initObj.hasOwnProperty('corners2d')) {
+        this.corners2d = initObj.corners2d
+      }
+      else {
+        this.corners2d = new Array(4).fill(new geometry_msgs.msg.Point32());
+      }
+      if (initObj.hasOwnProperty('tag_size')) {
+        this.tag_size = initObj.tag_size
+      }
+      else {
+        this.tag_size = 0.0;
+      }
+      if (initObj.hasOwnProperty('pose')) {
+        this.pose = initObj.pose
+      }
+      else {
+        this.pose = new geometry_msgs.msg.Pose();
+      }
+    }
   }
 
-  static serialize(obj, bufferInfo) {
+  static serialize(obj, buffer, bufferOffset) {
     // Serializes a message object of type AprilTagDetection
     // Serialize message field [header]
-    bufferInfo = std_msgs.msg.Header.serialize(obj.header, bufferInfo);
+    bufferOffset = std_msgs.msg.Header.serialize(obj.header, buffer, bufferOffset);
     // Serialize message field [id]
-    bufferInfo = _serializer.uint32(obj.id, bufferInfo);
+    bufferOffset = _serializer.uint32(obj.id, buffer, bufferOffset);
+    // Check that the constant length array field [corners2d] has the right length
+    if (obj.corners2d.length !== 4) {
+      throw new Error('Unable to serialize array field corners2d - length must be 4')
+    }
     // Serialize message field [corners2d]
     obj.corners2d.forEach((val) => {
-      bufferInfo = geometry_msgs.msg.Point32.serialize(val, bufferInfo);
+      bufferOffset = geometry_msgs.msg.Point32.serialize(val, buffer, bufferOffset);
     });
     // Serialize message field [tag_size]
-    bufferInfo = _serializer.float32(obj.tag_size, bufferInfo);
+    bufferOffset = _serializer.float32(obj.tag_size, buffer, bufferOffset);
     // Serialize message field [pose]
-    bufferInfo = geometry_msgs.msg.Pose.serialize(obj.pose, bufferInfo);
-    return bufferInfo;
+    bufferOffset = geometry_msgs.msg.Pose.serialize(obj.pose, buffer, bufferOffset);
+    return bufferOffset;
   }
 
-  static deserialize(buffer) {
+  static deserialize(buffer, bufferOffset=[0]) {
     //deserializes a message object of type AprilTagDetection
-    let tmp;
     let len;
-    let data = new AprilTagDetection();
+    let data = new AprilTagDetection(null);
     // Deserialize message field [header]
-    tmp = std_msgs.msg.Header.deserialize(buffer);
-    data.header = tmp.data;
-    buffer = tmp.buffer;
+    data.header = std_msgs.msg.Header.deserialize(buffer, bufferOffset);
     // Deserialize message field [id]
-    tmp = _deserializer.uint32(buffer);
-    data.id = tmp.data;
-    buffer = tmp.buffer;
-    len = 4;
+    data.id = _deserializer.uint32(buffer, bufferOffset);
     // Deserialize message field [corners2d]
+    len = 4;
+    data.corners2d = new Array(len);
     for (let i = 0; i < len; ++i) {
-      tmp = geometry_msgs.msg.Point32.deserialize(buffer);
-      data.corners2d[i] = tmp.data;
-      buffer = tmp.buffer;
+      data.corners2d[i] = geometry_msgs.msg.Point32.deserialize(buffer, bufferOffset)
     }
     // Deserialize message field [tag_size]
-    tmp = _deserializer.float32(buffer);
-    data.tag_size = tmp.data;
-    buffer = tmp.buffer;
+    data.tag_size = _deserializer.float32(buffer, bufferOffset);
     // Deserialize message field [pose]
-    tmp = geometry_msgs.msg.Pose.deserialize(buffer);
-    data.pose = tmp.data;
-    buffer = tmp.buffer;
-    return {
-      data: data,
-      buffer: buffer
-    }
+    data.pose = geometry_msgs.msg.Pose.deserialize(buffer, bufferOffset);
+    return data;
+  }
+
+  static getMessageSize(object) {
+    let length = 0;
+    length += std_msgs.msg.Header.getMessageSize(object.header);
+    return length + 112;
   }
 
   static datatype() {
@@ -149,6 +184,57 @@ class AprilTagDetection {
     `;
   }
 
+  static Resolve(msg) {
+    // deep-construct a valid message object instance of whatever was passed in
+    if (typeof msg !== 'object' || msg === null) {
+      msg = {};
+    }
+    const resolved = new AprilTagDetection(null);
+    if (msg.header !== undefined) {
+      resolved.header = std_msgs.msg.Header.Resolve(msg.header)
+    }
+    else {
+      resolved.header = new std_msgs.msg.Header()
+    }
+
+    if (msg.id !== undefined) {
+      resolved.id = msg.id;
+    }
+    else {
+      resolved.id = 0
+    }
+
+    if (msg.corners2d !== undefined) {
+      resolved.corners2d = new Array(4)
+      for (let i = 0; i < resolved.corners2d.length; ++i) {
+        if (msg.corners2d.length > i) {
+          resolved.corners2d[i] = geometry_msgs.msg.Point32.Resolve(msg.corners2d[i]);
+        }
+        else {
+          resolved.corners2d[i] = new geometry_msgs.msg.Point32();
+        }
+      }
+    }
+    else {
+      resolved.corners2d = new Array(4).fill(new geometry_msgs.msg.Point32())
+    }
+
+    if (msg.tag_size !== undefined) {
+      resolved.tag_size = msg.tag_size;
+    }
+    else {
+      resolved.tag_size = 0.0
+    }
+
+    if (msg.pose !== undefined) {
+      resolved.pose = geometry_msgs.msg.Pose.Resolve(msg.pose)
+    }
+    else {
+      resolved.pose = new geometry_msgs.msg.Pose()
+    }
+
+    return resolved;
+    }
 };
 
 module.exports = AprilTagDetection;

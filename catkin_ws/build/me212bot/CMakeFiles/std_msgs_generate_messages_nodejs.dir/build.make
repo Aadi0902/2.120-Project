@@ -43,10 +43,10 @@ RM = /usr/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/robot/2.120-project/catkin_ws/src
+CMAKE_SOURCE_DIR = /home/robot/Desktop/2.120-Project/catkin_ws/src
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/robot/2.120-project/catkin_ws/build
+CMAKE_BINARY_DIR = /home/robot/Desktop/2.120-Project/catkin_ws/build
 
 # Utility rule file for std_msgs_generate_messages_nodejs.
 
@@ -63,10 +63,10 @@ me212bot/CMakeFiles/std_msgs_generate_messages_nodejs.dir/build: std_msgs_genera
 .PHONY : me212bot/CMakeFiles/std_msgs_generate_messages_nodejs.dir/build
 
 me212bot/CMakeFiles/std_msgs_generate_messages_nodejs.dir/clean:
-	cd /home/robot/2.120-project/catkin_ws/build/me212bot && $(CMAKE_COMMAND) -P CMakeFiles/std_msgs_generate_messages_nodejs.dir/cmake_clean.cmake
+	cd /home/robot/Desktop/2.120-Project/catkin_ws/build/me212bot && $(CMAKE_COMMAND) -P CMakeFiles/std_msgs_generate_messages_nodejs.dir/cmake_clean.cmake
 .PHONY : me212bot/CMakeFiles/std_msgs_generate_messages_nodejs.dir/clean
 
 me212bot/CMakeFiles/std_msgs_generate_messages_nodejs.dir/depend:
-	cd /home/robot/2.120-project/catkin_ws/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/robot/2.120-project/catkin_ws/src /home/robot/2.120-project/catkin_ws/src/me212bot /home/robot/2.120-project/catkin_ws/build /home/robot/2.120-project/catkin_ws/build/me212bot /home/robot/2.120-project/catkin_ws/build/me212bot/CMakeFiles/std_msgs_generate_messages_nodejs.dir/DependInfo.cmake --color=$(COLOR)
+	cd /home/robot/Desktop/2.120-Project/catkin_ws/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/robot/Desktop/2.120-Project/catkin_ws/src /home/robot/Desktop/2.120-Project/catkin_ws/src/me212bot /home/robot/Desktop/2.120-Project/catkin_ws/build /home/robot/Desktop/2.120-Project/catkin_ws/build/me212bot /home/robot/Desktop/2.120-Project/catkin_ws/build/me212bot/CMakeFiles/std_msgs_generate_messages_nodejs.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : me212bot/CMakeFiles/std_msgs_generate_messages_nodejs.dir/depend
 

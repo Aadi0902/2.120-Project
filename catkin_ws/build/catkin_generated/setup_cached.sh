@@ -7,4 +7,7 @@
 # new environment variables
 
 # modified environment variables
-export PWD="/home/robot/2.120-project/catkin_ws/build"
+export CMAKE_PREFIX_PATH="/home/robot/Desktop/2.120-Project/catkin_ws/devel:$CMAKE_PREFIX_PATH"
+export PWD='/home/robot/Desktop/2.120-Project/catkin_ws/build'
+export ROSLISP_PACKAGE_DIRECTORIES="/home/robot/Desktop/2.120-Project/catkin_ws/devel/share/common-lisp:$ROSLISP_PACKAGE_DIRECTORIES"
+export ROS_PACKAGE_PATH="/home/robot/Desktop/2.120-Project/catkin_ws/src:$ROS_PACKAGE_PATH"

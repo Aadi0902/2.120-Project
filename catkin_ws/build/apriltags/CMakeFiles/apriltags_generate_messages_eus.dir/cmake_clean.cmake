@@ -1,8 +1,8 @@
 file(REMOVE_RECURSE
   "CMakeFiles/apriltags_generate_messages_eus"
-  "/home/robot/2.120-project/catkin_ws/devel/share/roseus/ros/apriltags/msg/AprilTagDetection.l"
-  "/home/robot/2.120-project/catkin_ws/devel/share/roseus/ros/apriltags/msg/AprilTagDetections.l"
-  "/home/robot/2.120-project/catkin_ws/devel/share/roseus/ros/apriltags/manifest.l"
+  "/home/robot/Desktop/2.120-Project/catkin_ws/devel/share/roseus/ros/apriltags/msg/AprilTagDetections.l"
+  "/home/robot/Desktop/2.120-Project/catkin_ws/devel/share/roseus/ros/apriltags/msg/AprilTagDetection.l"
+  "/home/robot/Desktop/2.120-Project/catkin_ws/devel/share/roseus/ros/apriltags/manifest.l"
 )
 
 # Per-language clean rules from dependency scanning.

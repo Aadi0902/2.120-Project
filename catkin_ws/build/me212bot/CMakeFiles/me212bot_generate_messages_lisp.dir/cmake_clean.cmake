@@ -1,6 +1,6 @@
 file(REMOVE_RECURSE
   "CMakeFiles/me212bot_generate_messages_lisp"
-  "/home/robot/2.120-project/catkin_ws/devel/share/common-lisp/ros/me212bot/msg/WheelCmdVel.lisp"
+  "/home/robot/Desktop/2.120-Project/catkin_ws/devel/share/common-lisp/ros/me212bot/msg/WheelCmdVel.lisp"
 )
 
 # Per-language clean rules from dependency scanning.

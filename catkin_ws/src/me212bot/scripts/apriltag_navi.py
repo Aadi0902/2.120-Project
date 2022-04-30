@@ -19,10 +19,10 @@ from helper import transformPose, pubFrame, cross2d, lookupTransform, pose2posel
 rospy.init_node('apriltag_navi', anonymous=True)
 lr = tf.TransformListener()
 br = tf.TransformBroadcaster()
-    
+odom_list = []
 def main():
     apriltag_sub = rospy.Subscriber("/apriltags/detections", AprilTagDetections, apriltag_callback, queue_size = 1)
-    odom = rospy.Subscriber("/odom", Pose, odo_callback, queue_size=1)
+    
     rospy.sleep(1)
     
     constant_vel = False
@@ -52,7 +52,7 @@ def constant_vel_loop():
 def apriltag_callback(data):
     # use apriltag pose detection to find where is the robot
     for detection in data.detections:
-        if detection.id == 1:   # tag id is the correct one
+        if detection.id == 0:   # tag id is the correct one
             poselist_tag_cam = pose2poselist(detection.pose)
             poselist_tag_base = transformPose(lr, poselist_tag_cam, 'camera', 'robot_base')
             poselist_base_tag = invPoselist(poselist_tag_base)
@@ -61,13 +61,15 @@ def apriltag_callback(data):
 
 
 def odo_callback(msg):
-    pose2poselist(msg)
+    global odom_list
+    odom_list = pose2poselist(msg)
 
 ## navigation control loop (No need to modify)
 def navi_loop():
     velcmd_pub = rospy.Publisher("/cmdvel", WheelCmdVel, queue_size = 1)
     target_pose2d = [0.25, 0, np.pi]
     rate = rospy.Rate(100) # 100hz
+    odom = rospy.Subscriber("/odom", Pose, odo_callback, queue_size=1)
     
     wcv = WheelCmdVel()
     
@@ -78,10 +80,11 @@ def navi_loop():
     while not rospy.is_shutdown() :
         # 1. get robot pose
         robot_pose3d = lookupTransform(lr, '/map', '/robot_base')
-        
+        global odom_list
         if robot_pose3d is None:
             print '1. Tag not in view, Stop'
-            theta=tfm.euler_from_quaternion(odom[3:])[2]
+            print(odom_list)
+            theta=tfm.euler_from_quaternion(odom_list[3:])[2]
             if theta<(pi/4-pi/90):
                     # turn right
                     wcv.desiredWV_R = -0.05  
@@ -95,8 +98,8 @@ def navi_loop():
                 wcv.desiredWV_R=0.1
                 wcv.desiredWV_L=0.1
 
-            elif odom[0]>=1 and odom[1]>=1 \
-            and odom[0]<=1.1 and odom[1]<=1.1:
+            elif odom_list[0]>=1 and odom_list[1]>=1 \
+            and odom_list[0]<=1.1 and odom_list[1]<=1.1:
                 # turn right
                 wcv.desiredWV_R = -0.05  
                 wcv.desiredWV_L = 0.05
@@ -130,34 +133,34 @@ def navi_loop():
 
 
         
-        # if arrived or (np.linalg.norm( pos_delta ) < 0.08 and np.fabs(diffrad(robot_yaw, target_pose2d[2]))<0.05) :
-        #     print 'Case 2.1  Stop'
-        #     wcv.desiredWV_R = 0  
-        #     wcv.desiredWV_L = 0
-        #     arrived = True
-        # elif np.linalg.norm( pos_delta ) < 0.08:
-        #     arrived_position = True
-        #     if diffrad(robot_yaw, target_pose2d[2]) > 0:
-        #         print 'Case 2.2.1  Turn right slowly'      
-        #         wcv.desiredWV_R = -0.05 
-        #         wcv.desiredWV_L = 0.05
-        #     else:
-        #         print 'Case 2.2.2  Turn left slowly'
-        #         wcv.desiredWV_R = 0.05  
-        #         wcv.desiredWV_L = -0.05
-        # elif arrived_position or np.fabs( heading_err_cross ) < 0.2:
-        #     print 'Case 2.3  Straight forward'  
-        #     wcv.desiredWV_R = 0.1
-        #     wcv.desiredWV_L = 0.1
-        # else:
-        #     if heading_err_cross < 0:
-        #         print 'Case 2.4.1  Turn right'
-        #         wcv.desiredWV_R = -0.1
-        #         wcv.desiredWV_L = 0.1
-        #     else:
-        #         print 'Case 2.4.2  Turn left'
-        #         wcv.desiredWV_R = 0.1
-        #         wcv.desiredWV_L = -0.1
+        if arrived or (np.linalg.norm( pos_delta ) < 0.08 and np.fabs(diffrad(robot_yaw, target_pose2d[2]))<0.05) :
+            print 'Case 2.1  Stop'
+            wcv.desiredWV_R = 0  
+            wcv.desiredWV_L = 0
+            arrived = True
+        elif np.linalg.norm( pos_delta ) < 0.08:
+            arrived_position = True
+            if diffrad(robot_yaw, target_pose2d[2]) > 0:
+                print 'Case 2.2.1  Turn right slowly'      
+                wcv.desiredWV_R = -0.05 
+                wcv.desiredWV_L = 0.05
+            else:
+                print 'Case 2.2.2  Turn left slowly'
+                wcv.desiredWV_R = 0.05  
+                wcv.desiredWV_L = -0.05
+        elif arrived_position or np.fabs( heading_err_cross ) < 0.2:
+            print 'Case 2.3  Straight forward'  
+            wcv.desiredWV_R = 0.1
+            wcv.desiredWV_L = 0.1
+        else:
+            if heading_err_cross < 0:
+                print 'Case 2.4.1  Turn right'
+                wcv.desiredWV_R = -0.1
+                wcv.desiredWV_L = 0.1
+            else:
+                print 'Case 2.4.2  Turn left'
+                wcv.desiredWV_R = 0.1
+                wcv.desiredWV_L = -0.1
 
         # 2-axis Proportional Control Implementation
         dX = np.linalg.norm(pos_delta)
