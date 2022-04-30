@@ -88,20 +88,75 @@ void PathPlanner::navigateTrajU(const RobotPose & robotPose) {
     // Check whether you are ready to move forward into the next stage of the path
     
     // an example for the first straight line has been provided:
-    if (robotPose.Th < PI/4 ) {
-        float robotVel = .5, K=1/b
+    bool collected = false;
+    float robotVel, K;
+    int robotCase;
+
+    if (robotPose.X<.1 && robotPose.Y<.1):
+    // in starting box
+        robotCase=1
+        if (robotPose.Th<PI/4) {
+            float robotVel = .1 K=-1/b
+        }
+        else if (robot.Pose>PI/4) {
+            float robotVel = .1 K=1/b
+        }
+        else {
+            float robotVel =.5 K=0
+        }
+
+
+    // if (robotPose.Th < PI/4 ) {
+    //     float robotVel = .5, K=1/b
+    //     updateDesiredV(robotVel, K);
+    // }
+    else if (robotPose.X<1.1 && && robotPose.Y<1.1) {
+        //drive from start box to middle
+        robotCase = 2
+        robotVel= .5 K=0
         updateDesiredV(robotVel, K);
+        
     }
-    else if (robotPose.X>1 and robotPose.X<1.5 and robotPose.Y>1 and robotPose.Y<1.5) {
-        //drive to april tag around y=2.4 or drive to april tag
-        while (robotPose.Th<3*PI/4) {
-            float robotVel= .5 K=1/b
-            updateDesiredV(robotVel, K);
+    else if (robotCase==2) {
+        robotVel=.1, K=1/b
+        // turn left to 45
+        if (abs(robotPose.Th-3*PI/4)<=PI/90) {
+            robotCase=3
+        }
+
+    }
+    else if (robotCase==3) {
+        robotVel=-.5, K=0
+        // reverse to middle
+        if (abs(robotPose.Y-1.1)<.1 and abs(robotPose.X-1.1)<.1) {
+            //collected regolith, back to middle
+            robotCase=4
+        }
+        
+        // if (robotPose.Y<.1 && robotPose.X>2) {
+        //     if (!collected) {
+        //         collected=true
+        //         // take the time
+        //     }
+        //     robotVel=0, K=0
+        // }
+        // else {
+        //     robotVel=.5, K=0
+        // }
+    }
+    // turn to april tag bottom right corner
+    // else if (robotPose.X>1.1 and robotPose.Y>1.1) {
+    //     robotVel = .1, K=-1/b
+        
+    else if (robotCase==4) {
+        robotVel =.1 K=1/b
+        if (abs(robotPose.Th-PI/4)<=PI/90) {
+            // collected regolith, back to the middle, turning to 45
+            robotCase= 5
         }
     }
-    else if (robotPose.Th == PI/4) {
-        float robotVel = .5, K=0
-        updateDesiredV(robotVel, K)
+    else if (robotCase==5) {
+
     }
     // Straight line forward
     // if (robotPose.pathDistance < 1.0) { 
@@ -118,6 +173,7 @@ void PathPlanner::navigateTrajU(const RobotPose & robotPose) {
     // Stop at the end
     //else {
     //}
+    updateDesiredV(robotVel, K)
 }
 
 void PathPlanner::updateDesiredV(float robotVel, float K) {
