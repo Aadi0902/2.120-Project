@@ -102,7 +102,7 @@ void PathPlanner::navigateTrajU(const RobotPose & robotPose) {
         if (abs(robotPose.Th-PI/4)<=PI/90) {
             robotCase=1;
         }
-        if (robotPose.Th<PI/4) {
+        else if (robotPose.Th<PI/4) {
             float robotVel = .1, K=-1/b;
         }
         else  {
@@ -120,7 +120,7 @@ void PathPlanner::navigateTrajU(const RobotPose & robotPose) {
         //drive from start box to middle
         
         robotVel= .5, K=0;
-        if (abs(robotPose.X-1.1)<=.1 && abs(robotPose.Y-1.1)<=.1) {
+        if (abs(robotPose.X-1.2)<=.1 && abs(robotPose.Y-1.2)<=.1) {
             robotCase=2;
         }
         
@@ -136,7 +136,7 @@ void PathPlanner::navigateTrajU(const RobotPose & robotPose) {
     else if (robotCase==3) {
         robotVel=-.5, K=0;
         // reverse to middle
-        if (abs(robotPose.Y-1.1)<.1 && abs(robotPose.X-1.1)<.1) {
+        if (abs(robotPose.Y-1.2)<.1 && abs(robotPose.X-1.2)<.1) {
             //collected regolith, back to middle
             robotCase=4;
         }
@@ -165,7 +165,7 @@ void PathPlanner::navigateTrajU(const RobotPose & robotPose) {
     }
     else if (robotCase==5) {
         robotVel=.3, K=0;
-        if (abs(robotPose.X-2.2)<.15) {
+        if (abs(robotPose.Y-1.9)<.05) {
             // time to turn right to bin
             robotCase=6;
         }
@@ -179,7 +179,7 @@ void PathPlanner::navigateTrajU(const RobotPose & robotPose) {
     else if (robotCase==7) {
         // drive to bin
         robotVel=.1, K=0;
-        if (robotPose.X==2.4) {
+        if (robotPose.X==2.39) {
             robotCase=8;
             collectionTime=time(0);
         }
@@ -187,7 +187,7 @@ void PathPlanner::navigateTrajU(const RobotPose & robotPose) {
     }
     else if (robotCase==8 && abs(collectionTime-time(0))>=30) {
         robotVel=-.1, K=0;
-        if (abs(robotPose.X-2.2)<.15) {
+        if (abs(robotPose.X-2)<.1) {
             // drive back to x=2.2
             robotCase=9;
         }
@@ -206,7 +206,7 @@ void PathPlanner::navigateTrajU(const RobotPose & robotPose) {
     else if (robotCase==10) {
         robotVel=-.5, K=0;
         // reverse to middle
-        if (abs(robotPose.Y-1.1)<.1 && abs(robotPose.X-1.1)<.1) {
+        if (abs(robotPose.Y-1.2)<.1 && abs(robotPose.X-1.2)<.1) {
             robotCase==2;
         }
     }
