@@ -1,43 +1,96 @@
-// Zack Bright        - zbright  _ mit _ edu,    Sept 2015
-// Daniel J. Gonzalez - dgonz    _ mit _ edu,    Sept 2015
-// Fangzhou Xia       - xiafz    _ mit _ edu,    Sept 2015
-// Peter KT Yu        - peterkty _ mit _ edu,    Sept 2016
-// Ryan Fish          - fishr    _ mit _ edu,    Sept 2016
-// Jerry Ng           - jerryng  _ mit _ edu,    Feb  2019
+// Author: Aadi Kothari aadi@mit.edu
 
 #include "Arduino.h"
 #include "helper.h"
+#include <ros.h>
+#include <geometry_msgs/PoseStamped.h>
+#include <geometry_msgs/Point.h>
+#include <geometry_msgs/Quaternion.h>
+
+#include <std_msgs/UInt16.h>
+#include <std_msgs/String.h>
+
+
+// rosrun rosserial_python serial_node.py __name:="node1" _port:=/dev/ttyACM0 _baud:=115200
 
 EncoderMeasurement  encoder(26);      // FIX THIS: encoder handler class, set the motor type 53 or 26 here
 RobotPose           robotPose;        // robot position and orientation calculation class
 PIController        wheelVelCtrl;     // velocity PI controller class
-SerialComm          serialComm;       // serial communication class
+//SerialComm          serialComm;       // serial communication class
 PathPlanner         pathPlanner;      // path planner
 unsigned long       prevTime = 0;
 
-boolean usePathPlanner = false;
+boolean usePathPlanner = true;
+float x_slam = 0, y_slam = 0, Th_slam = 0;
+
+// ROS
+ros::NodeHandle node_handle;
+
+
+
+void subscriberCallback(const geometry_msgs::PoseStamped& pose_val) {
+  x_slam = pose_val.pose.position.x;
+  y_slam = pose_val.pose.position.y;
+  float q[4] = {pose_val.pose.orientation.x, pose_val.pose.orientation.y, pose_val.pose.orientation.z, pose_val.pose.orientation.w};
+  Th_slam = quat2euler(q);
+  String out = "X: "+String(x_slam)+" | Y: "+String(y_slam)+" | Th: " + String(Th_slam);
+  node_handle.loginfo("Receiving pose from slam");
+}
+
+float quat2euler(float q[])
+{
+  double sinr_cosp = 2 * (q[3] * q[0] + q[1] * q[2]);
+  double cosr_cosp = 1 - 2 * (q[0] * q[0] + q[1] * q[1]);
+  float roll = atan2(sinr_cosp, cosr_cosp);
+
+  // pitch (y-axis rotation)
+  double sinp = 2 * (q[3] * q[1] - q[2] * q[0]);
+
+  float pitch = 0;
+  if (abs(sinp) >= 1)
+  {
+      pitch = (sinp/abs(sinp)) * M_PI / 2; // use 90 degrees if out of range
+  }
+  else
+  {
+      pitch = asin(sinp);
+  }
+
+  // yaw (z-axis rotation)
+  double siny_cosp = 2 * (q[3] * q[2] + q[0] * q[1]);
+  double cosy_cosp = 1 - 2 * (q[1] * q[1] + q[2] * q[2]);
+  float yaw = atan2(siny_cosp, cosy_cosp);
+
+  return(yaw);
+}
+ros::Subscriber<geometry_msgs::PoseStamped> pose_subscriber("/orb_slam2_mono/pose", &subscriberCallback);
 
 void setup() {
-    Serial.begin(115200);       // initialize Serial Communication
+    node_handle.getHardware()->setBaud(115200);
+    node_handle.initNode();
+    node_handle.subscribe(pose_subscriber);
+    
     encoder.init();  // connect with encoder
     wheelVelCtrl.init();        // connect with motor
-    delay(1e3);                 // delay 1000 ms so the robot doesn't drive off without you
+    //delay(1e3);                 // delay 1000 ms so the robot doesn't drive off without you
 }
 
 void loop() {
     //timed loop implementation
+    
+    //node_handle.loginfo("Called sub");
     unsigned long currentTime = micros();
     
     if (currentTime - prevTime >= PERIOD_MICROS) {
-      
+        node_handle.subscribe(pose_subscriber);
         // 1. Obtain and convert encoder measurement
         encoder.update(); 
 
         // 2. Compute robot odometry
-        robotPose.update(encoder.dPhiL, encoder.dPhiR); 
+        robotPose.update(x_slam, y_slam, Th_slam); 
 
         // 3. Send robot odometry through serial port
-        serialComm.send(robotPose); 
+        //serialComm.send(robotPose); 
         
         // 4. Compute desired wheel velocity without or with motion planner
         if (!usePathPlanner) {
@@ -55,7 +108,9 @@ void loop() {
         wheelVelCtrl.doPIControl("Right", pathPlanner.desiredWV_R, encoder.v_R);
 
         prevTime = currentTime; // update time
+        node_handle.spinOnce();
     } 
+    
 }
 
 

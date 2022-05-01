@@ -1,0 +1,8 @@
+prefix=/home/robot/2.120-Project/Project_files/catkin_ws/devel
+
+Name: me212bot
+Description: Description of me212bot
+Version: 0.0.0
+Cflags: -I/home/robot/2.120-Project/Project_files/catkin_ws/devel/include
+Libs: -L${prefix}/lib 
+Requires: 

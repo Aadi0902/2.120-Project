@@ -62,12 +62,12 @@ class RobotPose {
     float X, Y;          // robot X,Y position in meters
     float Th;            // robot orientation in rad
     float pathDistance;  // trajectory path distance in meters
-    
+    float X_prev, Y_prev;
     RobotPose():
       Th(0), 
-      X(0), Y(0), pathDistance(0) {}
+      X(0), Y(0), pathDistance(0), X_prev(0), Y_prev(0){}
       
-    void update(float dPhiL, float dPhiR); // update the odometry from delta in R and L wheel positions
+    void update(float x_slam, float y_slam, float Th); // update the odometry from delta in R and L wheel positions
 };
 
 class PIController {
@@ -83,25 +83,25 @@ class PIController {
     const float Kiv1 = 10000,    Kiv2 = 10000;     // I gain for motor 1 and 2
 };
 
-class SerialComm {
-  public:
-    SerialComm(){
-        prevSerialTime = micros();
-    }
-    void send(const RobotPose& robotPose) {
-        unsigned long current_time = micros();
-        if (current_time - prevSerialTime >= SERIAL_PERIOD_MICROS) {
-            Serial.print("#,");
-            Serial.print(robotPose.X, 6);   Serial.print(",");  //X 
-            Serial.print(robotPose.Y, 6);   Serial.print(",");  //Y 
-            Serial.print(robotPose.Th);                         //Th
-            Serial.print(",#\n");
-            prevSerialTime = current_time;
-        }
-    }
-  private: 
-    unsigned long prevSerialTime;
-};
+//class SerialComm {
+//  public:
+//    SerialComm(){
+//        prevSerialTime = micros();
+//    }
+//    void send(const RobotPose& robotPose) {
+//        unsigned long current_time = micros();
+//        if (current_time - prevSerialTime >= SERIAL_PERIOD_MICROS) {
+//            Serial.print("#,");
+//            Serial.print(robotPose.X, 6);   Serial.print(",");  //X 
+//            Serial.print(robotPose.Y, 6);   Serial.print(",");  //Y 
+//            Serial.print(robotPose.Th);                         //Th
+//            Serial.print(",#\n");
+//            prevSerialTime = current_time;
+//        }
+//    }
+//  private: 
+//    unsigned long prevSerialTime;
+//};
 
 class PathPlanner {
   public:

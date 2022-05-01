@@ -127,8 +127,9 @@ if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
   include("/home/robot/2.120-Project/Project_files/catkin_ws/build/gtest/cmake_install.cmake")
   include("/home/robot/2.120-Project/Project_files/catkin_ws/build/me212_robot/cmake_install.cmake")
+  include("/home/robot/2.120-Project/Project_files/catkin_ws/build/me212bot/cmake_install.cmake")
+  include("/home/robot/2.120-Project/Project_files/catkin_ws/build/apriltags/cmake_install.cmake")
   include("/home/robot/2.120-Project/Project_files/catkin_ws/build/orb_slam_2_ros/cmake_install.cmake")
-  include("/home/robot/2.120-Project/Project_files/catkin_ws/build/usb_cam-develop/cmake_install.cmake")
 
 endif()
 
