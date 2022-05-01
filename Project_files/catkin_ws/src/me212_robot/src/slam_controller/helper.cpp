@@ -1,10 +1,4 @@
-  // Zack Bright        - zbright  _ mit _ edu,    Sept 2015
-// Daniel J. Gonzalez - dgonz    _ mit _ edu,    Sept 2015
-// Fangzhou Xia       - xiafz    _ mit _ edu,    Sept 2015
-// Peter KT Yu        - peterkty _ mit _ edu,    Sept 2016
-// Ryan Fish          - fishr    _ mit _ edu,    Sept 2016
-// Jerry Ng           - jerryng  _ mit _ edu,    Feb 2019
-
+// Aadi
 #include "helper.h"
 
 //Encoder Measurement Class function implementation
@@ -98,17 +92,17 @@ void PathPlanner::navigateTrajU(const RobotPose & robotPose) {
     // an example for the first straight line has been provided:
     
     // Straight line forward
-    if (robotPose.pathDistance < 1.0) { 
+    if (robotPose.pathDistance < 0.3) { 
         float robotVel = .2, K = 0;
         updateDesiredV(robotVel, K);
     } 
     // Hemicircle
-    else if (robotPose.pathDistance < (1.0 + 0.25*PI)){
+    else if (robotPose.pathDistance < (0.3 + 0.25*PI)){
       float robotVel = .2, K = 1/0.25;
       updateDesiredV(robotVel, K);
     }
     // Straight line back
-    else if(robotPose.pathDistance < (1.0 + 0.25*PI + 1)){
+    else if(robotPose.pathDistance < (0.3 + 0.25*PI + 0.3)){
       float robotVel = .2, K = 0;
       updateDesiredV(robotVel, K);
     }
@@ -123,8 +117,8 @@ void PathPlanner::updateDesiredV(float robotVel, float K) {
     // command wheel velocities based on K and average forwardVel
     
     // MODIFY CODE BELOW TO SET THE CORRECT VALUES
-    desiredWV_L = robotVel * (1 - K *b)/r;
-    desiredWV_R = robotVel * (1 + K *b)/r;
+    desiredWV_L = robotVel * (1 - K *b);
+    desiredWV_R = robotVel * (1 + K *b);
 }
 
 // PIController Class function implementation (not the focus of this lab)

@@ -12,7 +12,7 @@
 
 
 // rosrun rosserial_python serial_node.py __name:="node1" _port:=/dev/ttyACM0 _baud:=115200
-
+#define period_us 50000 
 EncoderMeasurement  encoder(26);      // FIX THIS: encoder handler class, set the motor type 53 or 26 here
 RobotPose           robotPose;        // robot position and orientation calculation class
 PIController        wheelVelCtrl;     // velocity PI controller class
@@ -32,6 +32,7 @@ void subscriberCallback(const geometry_msgs::PoseStamped& pose_val) {
   x_slam = pose_val.pose.position.x;
   y_slam = pose_val.pose.position.y;
   float q[4] = {pose_val.pose.orientation.x, pose_val.pose.orientation.y, pose_val.pose.orientation.z, pose_val.pose.orientation.w};
+
   Th_slam = quat2euler(q);
   String out = "X: "+String(x_slam)+" | Y: "+String(y_slam)+" | Th: " + String(Th_slam);
   node_handle.loginfo("Receiving pose from slam");
@@ -81,7 +82,7 @@ void loop() {
     //node_handle.loginfo("Called sub");
     unsigned long currentTime = micros();
     
-    if (currentTime - prevTime >= PERIOD_MICROS) {
+    if (currentTime - prevTime >= period_us) {
         node_handle.subscribe(pose_subscriber);
         // 1. Obtain and convert encoder measurement
         encoder.update(); 
@@ -89,6 +90,13 @@ void loop() {
         // 2. Compute robot odometry
         robotPose.update(x_slam, y_slam, Th_slam); 
 
+        if(x_slam < 0.3)
+        {
+          node_handle.loginfo("Going straight");
+          }
+          else{
+            node_handle.loginfo("Taking a turn");
+            }
         // 3. Send robot odometry through serial port
         //serialComm.send(robotPose); 
         

@@ -61,8 +61,8 @@ int _nSF = 12;
 float C2Rad1 = 1080/(2*PI);
 float C2Rad2 = 25000 / (2 * PI);//98 * 12 * 4 / (2 * PI);
 
-Encoder Mot1(2, 6);
-Encoder Mot2(3, 5);
+Encoder Mot1(3, 5);
+Encoder Mot2(2, 6);
 
 // ================================================================
 // ===               VARIABLE DEFINITION                        ===

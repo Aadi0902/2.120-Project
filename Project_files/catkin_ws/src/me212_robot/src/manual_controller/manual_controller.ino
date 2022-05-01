@@ -6,7 +6,7 @@
 // Ryan Fish          - fishr    _ mit _ edu,    Sept 2016
 // Jerry Ng           - jerryng  _ mit _ edu,    Feb  2019
 
-// rosrun rosserial_python serial_node.py __name:="node1" _port:=/dev/ttyACM1 _baud:=115200
+// rosrun rosserial_python serial_node.py __name:="node1" _port:=/dev/ttyACM0 _baud:=115200
 
 #include "Arduino.h"
 #include "helper.h"
