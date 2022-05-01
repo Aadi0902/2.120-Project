@@ -49,7 +49,7 @@ void loop() {
             // 4.2 compute wheel speed from using a navigation policy
             pathPlanner.navigateTrajU(robotPose); 
         }
-
+        Serial.print(robotPose.Y);
         // 5. Command desired velocity with PI controller
         wheelVelCtrl.doPIControl("Left",  pathPlanner.desiredWV_L, encoder.v_L); 
         wheelVelCtrl.doPIControl("Right", pathPlanner.desiredWV_R, encoder.v_R);

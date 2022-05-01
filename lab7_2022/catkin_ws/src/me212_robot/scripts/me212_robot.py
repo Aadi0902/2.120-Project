@@ -13,10 +13,10 @@ import pdb
 from visualization_msgs.msg import Marker
 from geometry_msgs.msg import Point, Pose
 
-port = '/dev/ttyACM0'
+port = '/dev/ttyACM1'
 
 class Arduino():
-    def __init__(self, port = '/dev/ttyACM0'):
+    def __init__(self, port = '/dev/ttyACM1'):
         self.comm = serial.Serial(port, 115200, timeout=5)
         self.br = tf.TransformBroadcaster()
         self.sendbuff = []

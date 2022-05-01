@@ -6,6 +6,8 @@
 // Jerry Ng           - jerryng  _ mit _ edu,    Feb 2019
 
 #include "helper.h"
+#include <time.h>
+
 
 //Encoder Measurement Class function implementation
 EncoderMeasurement::EncoderMeasurement(int motor_type): 
@@ -80,7 +82,8 @@ void RobotPose::update(float dPhiL, float dPhiR) {
     X = X+dX;
     Y = Y+dY;
 
-    pathDistance += sqrt(dX^2+dY^2);
+    pathDistance += sqrt(dX*dX+dY*dY);
+}
 
 //PathPlanner Class function implementation
 void PathPlanner::navigateTrajU(const RobotPose & robotPose) {
@@ -93,18 +96,19 @@ void PathPlanner::navigateTrajU(const RobotPose & robotPose) {
     int robotCase;
     time_t collectionTime;
 
-    if (robotPose.X<.1 && robotPose.Y<.1):
+    if (robotPose.X<.1 && robotPose.Y<.1){
     // in starting box
         
         if (abs(robotPose.Th-PI/4)<=PI/90) {
-            robotCase=1
+            robotCase=1;
         }
         if (robotPose.Th<PI/4) {
-            float robotVel = .1 K=-1/b
+            float robotVel = .1, K=-1/b;
         }
-        else (robot.Pose>PI/4) {
-            float robotVel = .1 K=1/b
+        else  {
+            float robotVel = .1, K=1/b;
         }
+    }
         
 
 
@@ -115,26 +119,26 @@ void PathPlanner::navigateTrajU(const RobotPose & robotPose) {
     else if (robotCase==1) {
         //drive from start box to middle
         
-        robotVel= .5, K=0
-        if (abs(robotPose.X-1.1)<=1 && abs(robotPose.Y-1.1)<=.1) {
-            robotCase=2
+        robotVel= .5, K=0;
+        if (abs(robotPose.X-1.1)<=.1 && abs(robotPose.Y-1.1)<=.1) {
+            robotCase=2;
         }
         
     }
     else if (robotCase==2) {
-        robotVel=.1, K=-1/b
+        robotVel=.1, K=-1/b;
         // turn right to 135
         if (abs(robotPose.Th-3*PI/4)<=PI/90) {
-            robotCase=3
+            robotCase=3;
         }
 
     }
     else if (robotCase==3) {
-        robotVel=-.5, K=0
+        robotVel=-.5, K=0;
         // reverse to middle
         if (abs(robotPose.Y-1.1)<.1 && abs(robotPose.X-1.1)<.1) {
             //collected regolith, back to middle
-            robotCase=4
+            robotCase=4;
         }
         
         // if (robotPose.Y<.1 && robotPose.X>2) {
@@ -153,61 +157,61 @@ void PathPlanner::navigateTrajU(const RobotPose & robotPose) {
     //     robotVel = .1, K=-1/b
         
     else if (robotCase==4) {
-        robotVel =.1, K=1/b
+        robotVel =.1, K=1/b;
         if (abs(robotPose.Th-PI/4)<=PI/90) {
             // collected regolith, back to the middle, turning to 45
-            robotCase= 5
+            robotCase= 5;
         }
     }
     else if (robotCase==5) {
-        robotVel=.3, K=0
+        robotVel=.3, K=0;
         if (abs(robotPose.X-2.2)<.15) {
             // time to turn right to bin
-            robotCase=6
+            robotCase=6;
         }
     }
     else if (robotCase==6) {
-        robotVel=.1, K=-1/b
-        if (abs(robotPose.th-PI/2)<=PI/90) {
-            robotCase=7
+        robotVel=.1, K=-1/b;
+        if (abs(robotPose.Th-PI/2)<=PI/90) {
+            robotCase=7;
         }
     }
     else if (robotCase==7) {
         // drive to bin
-        robotVel=.1, K=0
+        robotVel=.1, K=0;
         if (robotPose.X==2.4) {
-            robotCase=8
-            collectionTime=time(0)
+            robotCase=8;
+            collectionTime=time(0);
         }
 
     }
     else if (robotCase==8 && abs(collectionTime-time(0))>=30) {
-        robotVel=-.1, K=0
+        robotVel=-.1, K=0;
         if (abs(robotPose.X-2.2)<.15) {
             // drive back to x=2.2
-            robotCase=9
+            robotCase=9;
         }
 
     }
 
     else if (robotCase==9) {
-        robotVel=.1, K=-1/b
+        robotVel=.1, K=-1/b;
         // turn left to 45
         if (abs(robotPose.Th-PI/4)==PI/90) {
-            robotCase=10
+            robotCase=10;
         }
 
     }
 
     else if (robotCase==10) {
-        robotVel=-.5, K=0
+        robotVel=-.5, K=0;
         // reverse to middle
         if (abs(robotPose.Y-1.1)<.1 && abs(robotPose.X-1.1)<.1) {
-            robotCase==2
+            robotCase==2;
         }
     }
     else {
-        robotVel=0, K=0
+        robotVel=0, K=0;
     }
     // Straight line forward
     // if (robotPose.pathDistance < 1.0) { 
@@ -224,8 +228,9 @@ void PathPlanner::navigateTrajU(const RobotPose & robotPose) {
     // Stop at the end
     //else {
     //}
-    updateDesiredV(robotVel, K)
+    updateDesiredV(robotVel, K);
 }
+
 
 void PathPlanner::updateDesiredV(float robotVel, float K) {
     // command wheel velocities based on K and average forwardVel
