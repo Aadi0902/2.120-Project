@@ -1,4 +1,10 @@
-// Aadi
+// Zack Bright        - zbright  _ mit _ edu,    Sept 2015
+// Daniel J. Gonzalez - dgonz    _ mit _ edu,    Sept 2015
+// Fangzhou Xia       - xiafz    _ mit _ edu,    Sept 2015
+// Peter KT Yu        - peterkty _ mit _ edu,    Sept 2016
+// Ryan Fish          - fishr    _ mit _ edu,    Sept 2016
+// Jerry Ng           - jerryng  _ mit _ edu,    Feb 2019
+
 #include "helper.h"
 
 //Encoder Measurement Class function implementation
@@ -17,7 +23,7 @@ EncoderMeasurement::EncoderMeasurement(int motor_type):
         gearing = gearing_26;
     }
     else;
-//        Serial.println("ERROR: BAD MOTOR TYPE INPUT, SHOULD BE 26 or 53");
+        //Serial.println("ERROR: BAD MOTOR TYPE INPUT, SHOULD BE 26 or 53");
         
     enc2rev = 1.0 / rev2enc;
     enc2rad = enc2rev * 2 * PI;
@@ -52,58 +58,71 @@ void EncoderMeasurement::update() {
     encoder2CountPrev = encoder2Count;
 }
 
-////RobotPose Class function implementation
-//void RobotPose::update(float dThetaL, float dThetaR) {
-//    // orientation angle theta increment in radians
-//    float dTh = (r / (2.0 * b)) * (dThetaR - dThetaL);
-//    
-//    Th += dTh;
-//    
-//    // robot X, Y position increment in meters
-//    float dX = (r / 2.0) * cos(Th) * (dThetaR + dThetaL); 
-//    float dY = (r / 2.0) * sin(Th) * (dThetaR + dThetaL);
-//    
-//    X += dX;
-//    Y += dY;
-//    
-//    pathDistance += sqrt(dX * dX + dY * dY);
-//}
-
-void RobotPose::update(float x_slam, float y_slam, float Th) {
- 
+//RobotPose Class function implementation
+void RobotPose::update(float dThetaL, float dThetaR) {
+    // orientation angle theta increment in radians
+    float dTh = (r / (2.0 * b)) * (dThetaR - dThetaL);
+    
+    Th += dTh;
+    
     // robot X, Y position increment in meters
-    x_slam = round(x_slam * 100)/100.0;
-    y_slam = round(y_slam * 100)/100.0;
-    Th = round(Th * 1000)/1000.0;
+    float dX = (r / 2.0) * cos(Th) * (dThetaR + dThetaL); 
+    float dY = (r / 2.0) * sin(Th) * (dThetaR + dThetaL);
     
-    float dX = x_slam - X;
-    float dY = y_slam - Y;
-    
-    X = x_slam; 
-    Y = y_slam;
+    X += dX;
+    Y += dY;
     
     pathDistance += sqrt(dX * dX + dY * dY);
 }
 
 //PathPlanner Class function implementation
 void PathPlanner::navigateTrajU(const RobotPose & robotPose) {
-
     float f2m = 0.3048; // feet to m conversion
     float in_bias = 2*1.414*f2m;
     float rad_turn = 0.25;
+
+    float d1 = 1;
+    float d2 = rad_turn*PI/2;
+    float d3 = 1 - rad_turn;
+    float d4 = 1;
+    float d5 = rad_turn*PI/2;
+    float d6 = 1;
+    float d7 = 0.2;
+    float d8 = 0.4;
+    
     // Straight line forward
-    if (robotPose.pathDistance < (4*1.414*f2m - in_bias - rad_turn)) { 
-        float robotVel = .2, K = 0;
+    if (robotPose.pathDistance < d1) { 
+        float robotVel = 0.2, K = 0;
         updateDesiredV(robotVel, K);
     } 
     // Hemicircle
-    else if (robotPose.pathDistance < (4*1.414*f2m - in_bias - rad_turn + rad_turn*PI/2)){
-      float robotVel = .2, K = -1/rad_turn;
+    else if (robotPose.pathDistance < d1+d2){
+      float robotVel = 0.2, K = -1/rad_turn;
       updateDesiredV(robotVel, K);
     }
     // Straight line back
-    else if(robotPose.pathDistance < (4*1.414*f2m - in_bias - rad_turn + rad_turn*PI/2 + 4*1.414*f2m - in_bias - rad_turn)){
-      float robotVel = .2, K = 0;
+    else if(robotPose.pathDistance < d1+d2+d3){
+      float robotVel = 0.2, K = 0;
+      updateDesiredV(robotVel, K);
+    }
+    else if(robotPose.pathDistance < d1+d2+d3+d4){
+      float robotVel = -0.2, K = 0;
+      updateDesiredV(robotVel, K);
+    }
+    else if(robotPose.pathDistance < d1+d2+d3+d4+d5){
+      float robotVel = -0.2, K = -1/rad_turn;
+      updateDesiredV(robotVel, K);
+    }
+    else if(robotPose.pathDistance < d1+d2+d3+d4+d5 +d6){
+      float robotVel = 0.2, K = 0;
+      updateDesiredV(robotVel, K);
+    }
+    else if(robotPose.pathDistance < d1+d2+d3+d4+d5 +d6+d7){
+      float robotVel = 0.2, K = -1/rad_turn;
+      updateDesiredV(robotVel, K);
+    }
+    else if(robotPose.pathDistance < d1+d2+d3+d4+d5 +d6+d7+d8){
+      float robotVel = 0.2, K = 0;
       updateDesiredV(robotVel, K);
     }
     // Stop at the end
@@ -135,7 +154,7 @@ void PIController::doPIControl(String side, float desV, float currV) {
         float ICommand = Kiv1 * mIntegratedVError1;
         
         // Sum
-        command =  PCommand + ICommand;
+        float command =  PCommand + ICommand;
 
         int sign = 1;
         md.setM1Speed(constrain(sign * command, -400, 400));   // use sign to make sure positive commands move robot forward
@@ -149,7 +168,7 @@ void PIController::doPIControl(String side, float desV, float currV) {
         float ICommand = Kiv2 * mIntegratedVError2;
 
         // Sum
-        command =  PCommand + ICommand;
+        float command =  PCommand + ICommand;
 
         int sign = -1;
         md.setM2Speed(constrain(sign * command, -400, 400));   // use sign to make sure positive commands move robot forward
@@ -157,7 +176,7 @@ void PIController::doPIControl(String side, float desV, float currV) {
     else {
         md.setM1Speed(0);
         md.setM2Speed(0);
-//        Serial.println("ERROR: INVALID MOTOR CHOICE GIVEN TO PI CONTROLLER");
+        //Serial.println("ERROR: INVALID MOTOR CHOICE GIVEN TO PI CONTROLLER");
     }
 }
 

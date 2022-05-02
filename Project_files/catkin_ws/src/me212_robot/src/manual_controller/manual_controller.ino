@@ -102,8 +102,9 @@ void loop() {
         wheelVelCtrl.doPIControl("Right", pathPlanner.desiredWV_R, encoder.v_R);
 
         prevTime = currentTime; // update time
+        node_handle.spinOnce();
     } 
-    node_handle.spinOnce();
+    
 }
 
 void drive_forwards() {
