@@ -77,7 +77,7 @@ double error_2, sum_error_2 = 0.0, d_error_2 = 0.0, filt_d_error_2 = 0.0, error_
 
 
 float         alpha = 0.25;    // low pass filter constant
-unsigned long timer;
+unsigned long timer = 0;
 double        loop_time = 0.01;
 double        Pcontrol, Icontrol, Dcontrol;
 double        pwm;

@@ -1,4 +1,4 @@
-// Aadi KOthari - aadi@mit.edu
+  // Aadi KOthari - aadi@mit.edu
 #include "Arduino.h"
 #include "helper.h"
 #include <ros.h>
@@ -33,8 +33,8 @@ ros::NodeHandle node_handle;
 void subscriberCallback(const std_msgs::Float64MultiArray& vel_curv) {
   float vel = vel_curv.data[0];
   float k = vel_curv.data[1];
-  pathPlanner.updateDesiredV(0, 0);
-  node_handle.loginfo("Received value");
+  pathPlanner.updateDesiredV(vel, k);
+  node_handle.loginfo("Received vel, k values");
 }
 ros::Subscriber<std_msgs::Float64MultiArray> vel_curv_subscriber("vel_curvature", &subscriberCallback);
 
@@ -48,6 +48,7 @@ void setup() {
     node_handle.initNode(); // Initialize node
     node_handle.advertise(path_dist_pub);
     node_handle.subscribe(vel_curv_subscriber);
+    path_dist.data = 0;
     
     encoder.init();  // connect with encoder
     wheelVelCtrl.init();        // connect with motor
@@ -89,8 +90,8 @@ void loop() {
         prevTime = currentTime; // update time 
         
         path_dist_pub.publish(&path_dist);      
-        node_handle.spinOnce(); 
     }
+    node_handle.spinOnce(); 
     delay(3);
 }
 
