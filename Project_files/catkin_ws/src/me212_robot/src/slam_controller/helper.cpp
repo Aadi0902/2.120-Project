@@ -16,8 +16,8 @@ EncoderMeasurement::EncoderMeasurement(int motor_type):
         rev2enc = rev2enc_26;
         gearing = gearing_26;
     }
-    else
-        Serial.println("ERROR: BAD MOTOR TYPE INPUT, SHOULD BE 26 or 53");
+    else;
+//        Serial.println("ERROR: BAD MOTOR TYPE INPUT, SHOULD BE 26 or 53");
         
     enc2rev = 1.0 / rev2enc;
     enc2rad = enc2rev * 2 * PI;
@@ -72,14 +72,15 @@ void EncoderMeasurement::update() {
 void RobotPose::update(float x_slam, float y_slam, float Th) {
  
     // robot X, Y position increment in meters
-    float dX = x_slam - X_prev;
-    float dY = y_slam - Y_prev;
+    x_slam = round(x_slam * 100)/100.0;
+    y_slam = round(y_slam * 100)/100.0;
+    Th = round(Th * 1000)/1000.0;
+    
+    float dX = x_slam - X;
+    float dY = y_slam - Y;
     
     X = x_slam; 
     Y = y_slam;
-
-    X_prev = x_slam;
-    Y_prev = y_slam;
     
     pathDistance += sqrt(dX * dX + dY * dY);
 }
@@ -135,7 +136,7 @@ void PIController::doPIControl(String side, float desV, float currV) {
         float ICommand = Kiv1 * mIntegratedVError1;
         
         // Sum
-        float command =  PCommand + ICommand;
+        command =  PCommand + ICommand;
 
         int sign = 1;
         md.setM1Speed(constrain(sign * command, -400, 400));   // use sign to make sure positive commands move robot forward
@@ -149,7 +150,7 @@ void PIController::doPIControl(String side, float desV, float currV) {
         float ICommand = Kiv2 * mIntegratedVError2;
 
         // Sum
-        float command =  PCommand + ICommand;
+        command =  PCommand + ICommand;
 
         int sign = -1;
         md.setM2Speed(constrain(sign * command, -400, 400));   // use sign to make sure positive commands move robot forward
@@ -157,7 +158,7 @@ void PIController::doPIControl(String side, float desV, float currV) {
     else {
         md.setM1Speed(0);
         md.setM2Speed(0);
-        Serial.println("ERROR: INVALID MOTOR CHOICE GIVEN TO PI CONTROLLER");
+//        Serial.println("ERROR: INVALID MOTOR CHOICE GIVEN TO PI CONTROLLER");
     }
 }
 

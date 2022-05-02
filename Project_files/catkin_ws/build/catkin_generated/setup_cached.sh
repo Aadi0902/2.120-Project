@@ -7,7 +7,7 @@
 # new environment variables
 
 # modified environment variables
-export CMAKE_PREFIX_PATH="/home/robot/2.120-Project/Project_files/catkin_ws/devel:$CMAKE_PREFIX_PATH"
+export LD_LIBRARY_PATH='/opt/ros/kinetic/lib:/opt/ros/kinetic/lib/x86_64-linux-gnu'
+export PKG_CONFIG_PATH='/opt/ros/kinetic/lib/pkgconfig:/opt/ros/kinetic/lib/x86_64-linux-gnu/pkgconfig'
 export PWD='/home/robot/2.120-Project/Project_files/catkin_ws/build'
-export ROSLISP_PACKAGE_DIRECTORIES='/home/robot/2.120-Project/Project_files/catkin_ws/devel/share/common-lisp'
-export ROS_PACKAGE_PATH="/home/robot/2.120-Project/Project_files/catkin_ws/src:$ROS_PACKAGE_PATH"
+export PYTHONPATH='/opt/ros/kinetic/lib/python2.7/dist-packages'

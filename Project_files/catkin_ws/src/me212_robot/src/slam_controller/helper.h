@@ -12,7 +12,7 @@
 #include "DualMC33926MotorShield.h"
 #include "LS7366.h"
 
-
+#include <ros.h>
 //Some useful constant definitions
 const float FREQ = 1000.0;                         // (Hz)
 const float PERIOD = 1.0 / FREQ;
@@ -66,14 +66,16 @@ class RobotPose {
     RobotPose():
       Th(0), 
       X(0), Y(0), pathDistance(0), X_prev(0), Y_prev(0){}
-      
+    //void update(float dPhiL, float dPhiR);  
     void update(float x_slam, float y_slam, float Th); // update the odometry from delta in R and L wheel positions
 };
 
 class PIController {
   public:
-    PIController(): mIntegratedVError1(0), mIntegratedVError2(0) {}
-    void init() { md.init();  Serial.println("Motor Driver Initialized..."); }
+    float command;
+    PIController(): mIntegratedVError1(0), mIntegratedVError2(0), command(0) {}
+    void init() { md.init();  //Serial.println("Motor Driver Initialized..."); 
+    }
     void doPIControl(String side, float desV, float currV);
     
   private:
@@ -83,31 +85,10 @@ class PIController {
     const float Kiv1 = 10000,    Kiv2 = 10000;     // I gain for motor 1 and 2
 };
 
-//class SerialComm {
-//  public:
-//    SerialComm(){
-//        prevSerialTime = micros();
-//    }
-//    void send(const RobotPose& robotPose) {
-//        unsigned long current_time = micros();
-//        if (current_time - prevSerialTime >= SERIAL_PERIOD_MICROS) {
-//            Serial.print("#,");
-//            Serial.print(robotPose.X, 6);   Serial.print(",");  //X 
-//            Serial.print(robotPose.Y, 6);   Serial.print(",");  //Y 
-//            Serial.print(robotPose.Th);                         //Th
-//            Serial.print(",#\n");
-//            prevSerialTime = current_time;
-//        }
-//    }
-//  private: 
-//    unsigned long prevSerialTime;
-//};
-
 class PathPlanner {
   public:
     float desiredWV_L;
     float desiredWV_R;
-    
     PathPlanner(): currentStage(1), desiredWV_L(0), desiredWV_R(0) {}
 
     void navigateTrajU(const RobotPose& robotPose);

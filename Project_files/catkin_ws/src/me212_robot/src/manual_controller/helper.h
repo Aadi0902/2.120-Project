@@ -73,7 +73,8 @@ class RobotPose {
 class PIController {
   public:
     PIController(): mIntegratedVError1(0), mIntegratedVError2(0) {}
-    void init() { md.init();  Serial.println("Motor Driver Initialized..."); }
+    void init() { md.init();  //Serial.println("Motor Driver Initialized..."); 
+	}
     void doPIControl(String side, float desV, float currV);
     
   private:
