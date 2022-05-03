@@ -4,6 +4,8 @@
 #include <ros.h>
 #include <std_msgs/Float32.h>
 #include <std_msgs/Float64MultiArray.h>
+#include <std_msgs/Bool.h>
+#include <std_msgs/String.h>
 
 // rosrun rosserial_python serial_node.py __name:="node1" _port:=/dev/ttyACM0 _baud:=115200
 
@@ -16,9 +18,7 @@ unsigned long       prev_task_time;
 boolean usePathPlanner = true;
 bool use_manual_contr = false;
 
-float mode = 5;
-int flag = 0;
-float task_time_delay = 1;
+float VL = 0, VR = 0;
 
 char c[5];
 void drive_forwards();
@@ -84,7 +84,7 @@ void setup() {
 void loop() {
     //timed loop implementation
     node_handle.subscribe(vel_curv_subscriber);
-    node_handle.subscrobe(manual_auto_sub);
+    node_handle.subscribe(manual_auto_sub);
     node_handle.subscribe(char_subscriber);
 
     unsigned long currentTime = micros();

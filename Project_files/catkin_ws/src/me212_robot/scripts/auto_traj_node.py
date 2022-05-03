@@ -3,6 +3,7 @@ import rospy
 import numpy as np
 from std_msgs.msg import Float64MultiArray
 from std_msgs.msg import Float32
+from std_msgs.msg import Bool
 
 
 PI = 3.1415
