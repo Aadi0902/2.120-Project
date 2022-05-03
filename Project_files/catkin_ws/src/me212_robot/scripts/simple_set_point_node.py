@@ -18,9 +18,9 @@ y_e_down = 0.05
 y_e_home = 0
 y_e_carry = -0.02
 
-theta_up = 0;
-theta_home = -48.01 * np.pi/180;
-theta_down = 2 * -46.01*np.pi/180;
+theta_up = 0
+theta_home = -48.01 * np.pi/180
+theta_down = 2 * -46.01*np.pi/180
 
 desired_y_e = 0
 desired_theta = 0

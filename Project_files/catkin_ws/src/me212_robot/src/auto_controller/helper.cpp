@@ -76,61 +76,6 @@ void RobotPose::update(float dThetaL, float dThetaR) {
 }
 
 //PathPlanner Class function implementation
-void PathPlanner::navigateTrajU(const RobotPose & robotPose) {
-    float f2m = 0.3048; // feet to m conversion
-    float in_bias = 2*1.414*f2m;
-    float rad_turn = 0.25;
-
-    float d1 = 1;
-    float d2 = rad_turn*PI/2;
-    float d3 = 1 - rad_turn;
-    float d4 = 1;
-    float d5 = rad_turn*PI/2;
-    float d6 = 1;
-    float d7 = 0.2;
-    float d8 = 0.4;
-    
-    // Straight line forward
-    if (robotPose.pathDistance < d1) { 
-        float robotVel = 0.2, K = 0;
-        updateDesiredV(robotVel, K);
-    } 
-    // Hemicircle
-    else if (robotPose.pathDistance < d1+d2){
-      float robotVel = 0.2, K = -1/rad_turn;
-      updateDesiredV(robotVel, K);
-    }
-    // Straight line back
-    else if(robotPose.pathDistance < d1+d2+d3){
-      float robotVel = 0.2, K = 0;
-      updateDesiredV(robotVel, K);
-    }
-    else if(robotPose.pathDistance < d1+d2+d3+d4){
-      float robotVel = -0.2, K = 0;
-      updateDesiredV(robotVel, K);
-    }
-    else if(robotPose.pathDistance < d1+d2+d3+d4+d5){
-      float robotVel = -0.2, K = -1/rad_turn;
-      updateDesiredV(robotVel, K);
-    }
-    else if(robotPose.pathDistance < d1+d2+d3+d4+d5 +d6){
-      float robotVel = 0.2, K = 0;
-      updateDesiredV(robotVel, K);
-    }
-    else if(robotPose.pathDistance < d1+d2+d3+d4+d5 +d6+d7){
-      float robotVel = 0.2, K = -1/rad_turn;
-      updateDesiredV(robotVel, K);
-    }
-    else if(robotPose.pathDistance < d1+d2+d3+d4+d5 +d6+d7+d8){
-      float robotVel = 0.2, K = 0;
-      updateDesiredV(robotVel, K);
-    }
-    // Stop at the end
-    else {
-      float robotVel = 0, K = 0;
-      updateDesiredV(robotVel, K);
-    }
-}
 
 void PathPlanner::updateDesiredV(float robotVel, float K) {
     // command wheel velocities based on K and average forwardVel

@@ -2,6 +2,7 @@
 import rospy
 from std_msgs.msg import Float64MultiArray
 from std_msgs.msg import String
+from std_msgs.msg import Bool
 import numpy as np
 from pynput.keyboard import Key, Listener
 '''
@@ -18,15 +19,22 @@ theta_down = 2*-48.01*np.pi/180
 key_inp = " "
 mode_inp = 1
 
+manual_contr = False
 
 mode_pub = rospy.Publisher("exec_mode", Float64MultiArray, queue_size=10)
 manual_pub = rospy.Publisher("manual_inp", String, queue_size=10)
+auto_man_pub = rospy.Publisher("manual_control", Bool, queue_size=10)
 rospy.init_node("user_mode_pub",anonymous=True)
 
 def on_press(key_press):
-    global mode_inp, key_inp, y_e_up, y_e_down, y_e_home, theta_up, theta_home, theta_down
+    global mode_inp, key_inp, y_e_up, y_e_down, y_e_home, theta_up, theta_home, theta_down, manual_contr
     try:
         key = key_press.char
+        if key == "p": # p is autonomous control
+            manual_contr = False
+        elif key == "o": # o is manual control
+            manual_contr = True
+
         if key == "w" or key == "s" or key == "d" or key == "a":
             key_inp = key
         elif key == "1" or key == "2" or key == "3" or key == "4" or key == "5":
@@ -66,16 +74,25 @@ def on_press(key_press):
 
     key_inp_str = String()
     key_inp_str.data = key_inp
-    mode_pub.publish(mode_param)
 
-    manual_pub.publish(key_inp_str)
-    rospy.loginfo(mode_param)
+    manual_switch_bool = Bool()
+    manual_switch_bool.data = manual_contr
+    auto_man_pub.publish(manual_switch_bool)
+
+    if manual_contr: # Stops publishing if autonomous control
+        mode_pub.publish(mode_param)
+        rospy.loginfo(mode_param)
+        manual_pub.publish(key_inp_str)
+    else:
+        rospy.loginfo("Autonomous control | Press o for manual control")
     
 def on_release(key):
-    key_inp = " "
-    key_inp_str = String()
-    key_inp_str.data = key_inp
-    manual_pub.publish(key_inp_str)
+    global manual_contr
+    if manual_contr: # Stops publishing if autonomous control
+        key_inp = " "
+        key_inp_str = String()
+        key_inp_str.data = key_inp
+        manual_pub.publish(key_inp_str)
 
 def main():
 

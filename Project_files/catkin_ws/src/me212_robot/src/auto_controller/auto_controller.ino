@@ -14,40 +14,65 @@ PathPlanner         pathPlanner;      // path planner
 unsigned long       prevTime = 0;
 unsigned long       prev_task_time;
 boolean usePathPlanner = true;
+bool use_manual_contr = false;
 
 float mode = 5;
 int flag = 0;
 float task_time_delay = 1;
 
-float y_e_up = 0.06;
-float y_e_down = -0.065;
-float y_e_home = 0;
-float y_e_carry = -0.02;
-float theta_up = 0;
-float theta_home = -48.01 * PI/180;
-float theta_down = 2*-48.01*PI/180;
+char c[5];
+void drive_forwards();
+void drive_backwards();
+void drive_ccw();
+void drive_cw();
+void stall();
 
 // ROS
 ros::NodeHandle node_handle;
 
-void subscriberCallback(const std_msgs::Float64MultiArray& vel_curv) {
+void vel_curv_callback(const std_msgs::Float64MultiArray& vel_curv) {
   float vel = vel_curv.data[0];
   float k = vel_curv.data[1];
-  pathPlanner.updateDesiredV(vel, k);
-  node_handle.loginfo("Received vel, k values");
+  if(!use_manual_contr)
+  {
+    pathPlanner.updateDesiredV(vel, k);
+    node_handle.loginfo("Received vel, k values");
+  }
 }
-ros::Subscriber<std_msgs::Float64MultiArray> vel_curv_subscriber("vel_curvature", &subscriberCallback);
+
+void manual_auto_callback(const std_msgs::Bool& manual_contr) {
+  use_manual_contr = manual_contr.data;
+  if(use_manual_contr)
+  {
+    node_handle.loginfo("Manual control");
+  }
+  else
+  {
+      node_handle.loginfo("Autonomous control");
+  }
+}
+void manual_callback(const std_msgs::String& inp) {
+  String tempStr = inp.data;
+  tempStr.toCharArray(c,5);
+  node_handle.loginfo("Received keyboard input");
+}
+
+ros::Subscriber<std_msgs::String> char_subscriber("manual_inp", &manual_callback);
+ros::Subscriber<std_msgs::Float64MultiArray> vel_curv_subscriber("vel_curvature", &vel_curv_callback);
+ros::Subscriber<std_msgs::Bool> manual_auto_sub("manual_control", &manual_auto_callback);
+
 
 std_msgs::Float32 path_dist;
 ros::Publisher path_dist_pub("path_distance", &path_dist);
 
 
 void setup() {
-
     node_handle.getHardware()->setBaud(115200);
     node_handle.initNode(); // Initialize node
     node_handle.advertise(path_dist_pub);
     node_handle.subscribe(vel_curv_subscriber);
+    node_handle.subscribe(manual_auto_sub);
+    node_handle.subscribe(char_subscriber);
     path_dist.data = 0;
     
     encoder.init();  // connect with encoder
@@ -59,6 +84,9 @@ void setup() {
 void loop() {
     //timed loop implementation
     node_handle.subscribe(vel_curv_subscriber);
+    node_handle.subscrobe(manual_auto_sub);
+    node_handle.subscribe(char_subscriber);
+
     unsigned long currentTime = micros();
     if (currentTime - prevTime >= PERIOD_MICROS){
         float robotVel = 0, K = 0;
@@ -70,17 +98,26 @@ void loop() {
 
         path_dist.data = robotPose.pathDistance;
         
-        
-        // 4. Compute desired wheel velocity without or with motion planner
-        if (!usePathPlanner) {
-            // 4.1 a fixed wheel speed for testing odometry
-            pathPlanner.desiredWV_R = 0.2;   
-            pathPlanner.desiredWV_L = 0.2;
-        }
-        else{
-            // 4.2 compute wheel speed from using a navigation policy
-            //pathPlanner.navigateTrajU(robotPose);           
-            
+        if(use_manual_contr)
+        {
+            if (c[0] == 'w'){
+              drive_forwards();
+              node_handle.loginfo("Forwards");
+            } else if (c[0] == 's'){
+              drive_backwards();
+              node_handle.loginfo("Backwards");
+            } else if (c[0] == 'a'){
+              drive_ccw();
+              node_handle.loginfo("Left");
+            } else if (c[0] == 'd'){
+              drive_cw(); 
+              node_handle.loginfo("Right");
+            } else if (c[0] == ' '){
+              stall();
+              node_handle.loginfo("Stopp");
+            }
+          pathPlanner.desiredWV_R = VR;   
+          pathPlanner.desiredWV_L = VL;
         }
         
         // 5. Command desired velocity with PI controller
@@ -95,4 +132,28 @@ void loop() {
     delay(3);
 }
 
+void drive_forwards() {
+  VL = 0.3;
+  VR = 0.3;
+}
 
+void drive_backwards() {
+  VL = -0.3;
+  VR = -0.3;
+}
+
+void drive_cw() {
+  VL = 0.3;
+  VR = -0.3;
+}
+
+void drive_ccw() {
+  VL = -0.3;
+  VR = 0.3;
+}
+
+void stall(){
+  //Setting both wheel velocities to zero, at stopped position
+  VL = 0;
+  VR = 0; 
+}
