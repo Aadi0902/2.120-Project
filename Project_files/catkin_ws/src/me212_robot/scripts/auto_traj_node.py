@@ -15,9 +15,9 @@ y_e_up = 0.06
 y_e_down = -0.05
 y_e_home = 0
 y_e_carry = -0.02
-theta_up = 0
-theta_home = -32.01 * np.pi/180
-theta_down = 2*-46.01*np.pi/180
+theta_up = 5*np.pi/180
+theta_home = -42.01 * np.pi/180
+theta_down = 2*-52.01*np.pi/180
 
 mode_prev = 0
 mode = 0
@@ -47,21 +47,29 @@ def path_callback(path_dist):
 
     d1 = 0.9
     d2 = rad_turn*PI/2
-    d3 = 1 - rad_turn
-    d4 = 0.6
+    d3 = 0.6 - rad_turn
+    d4 = 0.312
     d5 = rad_turn*PI/2
     d6 = 1.3
     d7 = 0.2
-    d8 = 0.9
-    d9 = 0.4
+    d8 = 0.7
+    d9 = 0.05#0.4
+    
+    # To_do
+    d_margein = 0.10
+    d_turn_depo = rad_turn*PI/180*45
+    d_straight_depo = 1.3
+    l1 = d1+d2+d3+d4+d5+d6+d7+d8+d9
+    l2 = l1+d_turn_depo+d_straight_depo+d2+d3+2*d_margein+d4+d5+d6+d7+d8+d9    
+    
     
     if path_dist.data < d1: # Straight
         mode = 5
         vel_curv.data = [robot_vel, 0]
     elif path_dist.data < d1+d2: # Turn
+        mode = 1
         vel_curv.data = [robot_vel, -1/rad_turn]
     elif path_dist.data < d1+d2+d3: # Straight
-        mode = 1
         vel_curv.data = [robot_vel, 0]
     elif path_dist.data < d1+d2+d3+d4: # Back
         mode = 2
@@ -75,13 +83,74 @@ def path_callback(path_dist):
         vel_curv.data = [robot_vel, -1/rad_turn]
     elif path_dist.data < d1+d2+d3+d4+d5+d6+d7+d8: # Straight
         vel_curv.data = [robot_vel, 0]
-    elif path_dist.data < d1+d2+d3+d4+d5+d6+d7+d8+d9: # Straight
+    elif path_dist.data < d1+d2+d3+d4+d5+d6+d7+d8+d9: # Back
         mode = 4
         vel_curv.data = [-robot_vel, 0]
+    # 2nd trip : target R
+    # deposit -> center
+    elif path_dist.data < l1+d_turn_depo: # Back and turn       #0
+        mode = 3 # Raise bucket
+        vel_curv.data = [-robot_vel, -1/rad_turn]
+    elif path_dist.data < l1+d_turn_depo+d_straight_depo: # back    #1
+        vel_curv.data = [-robot_vel, 0]
+    elif path_dist.data < l1+d_turn_depo+d_straight_depo+d2: # turn right   #2
+        mode = 1 # Heading to excavate
+        vel_curv.data = [robot_vel, -1/rad_turn]
+    # center -> deposit
+    elif path_dist.data < l1+d_turn_depo+d_straight_depo+d2+d3+d_margein: # Straight        #3
+        vel_curv.data = [robot_vel, 0]
+    elif path_dist.data < l1+d_turn_depo+d_straight_depo+d2+d3+2*d_margein+d4: # Back        #4
+        mode = 2 # Excavate
+        vel_curv.data = [-robot_vel, 0]
+    elif path_dist.data < l1+d_turn_depo+d_straight_depo+d2+d3+2*d_margein+d4+d5: # Back turn        #5
+        mode = 3 # Raise bucket
+        vel_curv.data = [-robot_vel, -1/rad_turn]
+    elif path_dist.data < l1+d_turn_depo+d_straight_depo+d2+d3+2*d_margein+d4+d5+d6: # Straight        #6
+        vel_curv.data = [robot_vel, 0]
+    elif path_dist.data < l1+d_turn_depo+d_straight_depo+d2+d3+2*d_margein+d4+d5+d6+d7: # Turn        #7
+        vel_curv.data = [robot_vel, -1/rad_turn]
+    elif path_dist.data < l1+d_turn_depo+d_straight_depo+d2+d3+2*d_margein+d4+d5+d6+d7+d8: # Straight        #8
+        vel_curv.data = [robot_vel, 0]
+    elif path_dist.data < l1+d_turn_depo+d_straight_depo+d2+d3+2*d_margein+d4+d5+d6+d7+d8+d9: # Straight        #9
+        mode = 4 # Deposit
+        vel_curv.data = [-robot_vel, 0]
+    # 3rd trip : target L
+    # deposit -> center
+    elif path_dist.data < l2+d_turn_depo: # Back and turn       #0
+        mode = 3 # Raise bucket
+        vel_curv.data = [-robot_vel, -1/rad_turn]
+    elif path_dist.data < l2+d_turn_depo+d_straight_depo: # back    #1
+        vel_curv.data = [-robot_vel, 0]
+    elif path_dist.data < l2+d_turn_depo+d_straight_depo+d2: # turn left   #2
+        mode = 1 # Heading to excavate
+        vel_curv.data = [robot_vel, 1/rad_turn]
+    # center -> deposit
+    elif path_dist.data < l2+d_turn_depo+d_straight_depo+d2+d3: # Straight        #3
+        vel_curv.data = [robot_vel, 0]
+    elif path_dist.data < l2+d_turn_depo+d_straight_depo+d2+d3+d4: # Back        #4
+        mode = 2 # Excavate
+        vel_curv.data = [-robot_vel, 0]
+    elif path_dist.data < l2+d_turn_depo+d_straight_depo+d2+d3+d4+d5: # Back turn        #5
+        mode = 3 # Raise bucket
+        vel_curv.data = [-robot_vel, 1/rad_turn]
+    elif path_dist.data < l2+d_turn_depo+d_straight_depo+d2+d3+d4+d5+d6: # Straight        #6
+        vel_curv.data = [robot_vel, 0]
+    elif path_dist.data < l2+d_turn_depo+d_straight_depo+d2+d3+d4+d5+d6+d7: # Turn        #7
+        vel_curv.data = [robot_vel, -1/rad_turn]
+    elif path_dist.data < l2+d_turn_depo+d_straight_depo+d2+d3+d4+d5+d6+d7+d8: # Straight        #8
+        vel_curv.data = [robot_vel, 0]
+    elif path_dist.data < l2+d_turn_depo+d_straight_depo+d2+d3+d4+d5+d6+d7+d8+d9: # Straight        #9
+        mode = 4 # Deposit
+        vel_curv.data = [-robot_vel, 0] 
+    #else command
     else:
         mode = 5
         vel_curv.data = [0, 0]
     
+
+
+
+
 
     
     if mode == 1: # Down position

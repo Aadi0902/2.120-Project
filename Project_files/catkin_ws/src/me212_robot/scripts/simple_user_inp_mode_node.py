@@ -12,9 +12,9 @@ y_e_up = 0.06
 y_e_down = -0.055
 y_e_home = 0
 y_e_carry = -0.02
-theta_up = 0
-theta_home = -32.01 * np.pi/180
-theta_down = 2*-48.01*np.pi/180
+theta_up = 10*np.pi/180
+theta_home = -35.01 * np.pi/180
+theta_down = 2*-52.01*np.pi/180
 
 key_inp = ' '
 mode_inp = 5
