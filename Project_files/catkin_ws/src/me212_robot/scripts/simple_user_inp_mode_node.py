@@ -2,26 +2,27 @@
 import rospy
 from std_msgs.msg import Float32MultiArray
 from std_msgs.msg import Bool
+from std_msgs.msg import Char
 import numpy as np
 from pynput.keyboard import Key, Listener
 '''
 Default values:
 '''
 y_e_up = 0.06
-y_e_down = -0.065
+y_e_down = -0.055
 y_e_home = 0
 y_e_carry = -0.02
 theta_up = 0
-theta_home = -48.01 * np.pi/180
+theta_home = -32.01 * np.pi/180
 theta_down = 2*-48.01*np.pi/180
 
 key_inp = ' '
-mode_inp = 1
+mode_inp = 5
 
 manual_contr = False
 
 mode_pub = rospy.Publisher("exec_mode", Float32MultiArray, queue_size=10)
-manual_pub = rospy.Publisher("manual_inp", String, queue_size=10)
+manual_pub = rospy.Publisher("manual_inp", Char, queue_size=10)
 auto_man_pub = rospy.Publisher("manual_control", Bool, queue_size=10)
 rospy.init_node("user_mode_pub",anonymous=True)
 
@@ -48,7 +49,7 @@ def on_press(key_press):
     if mode_inp == 1: # Down position
         y_e_inp = y_e_down
         theta_inp = theta_home
-        task_time_inp = 2
+        task_time_inp = 1
     elif mode_inp == 2: # Excavate
         #mode = 2
         y_e_inp = y_e_carry
@@ -58,21 +59,21 @@ def on_press(key_press):
         #mode = 3
         y_e_inp = y_e_up
         theta_inp = theta_up
-        task_time_inp = 2
+        task_time_inp = 1.5
     elif mode_inp ==4: # Dump
         #mode = 4
         y_e_inp = y_e_up
         theta_inp = theta_down
         task_time_inp = 1
     else:
-        y_e_inp = 0
-        theta_inp = 0
-        task_time_inp = 0.5 # Doesn't mean anything in this section
+        y_e_inp = y_e_home
+        theta_inp = theta_up
+        task_time_inp = 1 # Doesn't mean anything in this section
     mode_param = Float32MultiArray()
     mode_param.data = [mode_inp, y_e_inp, theta_inp, task_time_inp]
 
-    key_inp_str = String()
-    key_inp_str.data = key_inp
+    key_inp_str = Char()
+    key_inp_str.data = ord(key_inp[0])
 
     manual_switch_bool = Bool()
     manual_switch_bool.data = manual_contr
@@ -89,8 +90,8 @@ def on_release(key):
     global manual_contr
     if manual_contr: # Stops publishing if autonomous control
         key_inp = ' '
-        key_inp_str = String()
-        key_inp_str.data = key_inp
+        key_inp_str = Char()
+        key_inp_str.data = ord(key_inp[0])
         manual_pub.publish(key_inp_str)
 
 def main():

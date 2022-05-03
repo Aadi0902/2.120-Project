@@ -5,12 +5,12 @@ cmd "0-roscore" {
 }
 
 cmd "1-arduino1" {
-    exec = "rosrun rosserial_python serial_node.py __name:="node1" _port:=/dev/ttyACM0 _baud:=115200";
+    exec = "rosrun rosserial_python serial_node.py __name:=\"node1\" _port:=/dev/ttyACM0 _baud:=115200";
     host = "localhost";
 }
 
 cmd "2-arduino2" {
-    exec = "rosrun rosserial_python serial_node.py __name:="node2" _port:=/dev/ttyACM1 _baud:=115200";
+    exec = "rosrun rosserial_python serial_node.py __name:=\"node2\" _port:=/dev/ttyACM1 _baud:=115200";
     host = "localhost";
 }
 
@@ -25,7 +25,7 @@ cmd "4-set-mode" {
 }
 
 cmd "5-run-traj" {
-    exec = ""rosrun me212_robot auto_traj_node.py";";
+    exec = "rosrun me212_robot auto_traj_node.py";
     host = "localhost";
 }
 

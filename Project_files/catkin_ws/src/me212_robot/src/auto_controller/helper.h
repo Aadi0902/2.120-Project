@@ -14,12 +14,9 @@
 
 
 //Some useful constant definitions
-const float FREQ = 1000.0;                         // (Hz)
-const float PERIOD = 1.0 / FREQ;
-const float PERIOD_MICROS = PERIOD * 1e6;
-const float SERIAL_FREQ = 100.0;                   // (Hz)
-const float SERIAL_PERIOD = 1.0 / SERIAL_FREQ;
-const float SERIAL_PERIOD_MICROS = SERIAL_PERIOD * 1e6;
+//const float FREQ = 1000.0;                         // (Hz)
+const float PERIOD = 1.0 / 1000;//FREQ;
+const float PERIOD_MICROS = 1e6/1000.0;//PERIOD * 1e6;
 const float b = 0.225; // (m)
 const float r = 0.037; // wheel radius (m)
 

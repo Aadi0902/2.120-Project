@@ -1,7 +1,7 @@
 #!/usr/bin/python
 import rospy
 import numpy as np
-from std_msgs.msg import Float64MultiArray
+from std_msgs.msg import Float32MultiArray
 from std_msgs.msg import Float32
 from std_msgs.msg import Bool
 
@@ -16,7 +16,7 @@ y_e_down = -0.05
 y_e_home = 0
 y_e_carry = -0.02
 theta_up = 0
-theta_home = -48.01 * np.pi/180
+theta_home = -32.01 * np.pi/180
 theta_down = 2*-46.01*np.pi/180
 
 mode_prev = 0
@@ -25,8 +25,8 @@ mode = 0
 task_time_inp = 0
 start_time = 0
 
-mode_pub = rospy.Publisher("exec_mode", Float64MultiArray, queue_size=10) # Publish mode to end effector
-vel_curv_pub = rospy.Publisher("vel_curvature", Float64MultiArray, queue_size=10) # Publish veloctiy and curvature to base arduino
+mode_pub = rospy.Publisher("exec_mode", Float32MultiArray, queue_size=10) # Publish mode to end effector
+vel_curv_pub = rospy.Publisher("vel_curvature", Float32MultiArray, queue_size=10) # Publish veloctiy and curvature to base arduino
 rospy.init_node("auto_traj_pub_sub",anonymous=True)
 
 prev_time = rospy.get_time() 
@@ -39,7 +39,7 @@ def manual_callback(man_contr_msg):
 
 def path_callback(path_dist):
     global y_e_up, y_e_down, y_e_home, y_e_carry, theta_up, theta_home, theta_down, mode_prev, mode, prev_time, task_time_inp, manual_control
-    vel_curv = Float64MultiArray()
+    vel_curv = Float32MultiArray()
     
     rad_turn = 0.25
 
@@ -54,6 +54,7 @@ def path_callback(path_dist):
     d9 = 0.4
     
     if path_dist.data < d1: # Straight
+        mode = 5
         vel_curv.data = [0.5, 0]
     elif path_dist.data < d1+d2: # Turn
         vel_curv.data = [0.5, -1/rad_turn]
@@ -94,16 +95,16 @@ def path_callback(path_dist):
         #mode = 3
         y_e_inp = y_e_up
         theta_inp = theta_up
-        task_time_inp = 2
+        task_time_inp = 1.5
     elif mode ==4: # Dump
         #mode = 4
         y_e_inp = y_e_up
         theta_inp = theta_down
         task_time_inp = 1
     else:
-        y_e_inp = 0
-        theta_inp = 0
-        task_time_inp = 0.5 # Doesn't mean anything in this section
+        y_e_inp = y_e_home
+        theta_inp = theta_up
+        task_time_inp = 1 # Doesn't mean anything in this section
         
     
     
@@ -115,7 +116,7 @@ def path_callback(path_dist):
     if cur_time - prev_time < task_time_inp:
         vel_curv.data = [0, 0]
     
-    mode_param = Float64MultiArray()
+    mode_param = Float32MultiArray()
     mode_param.data = [mode, y_e_inp, theta_inp, task_time_inp]
 
     if not manual_control:

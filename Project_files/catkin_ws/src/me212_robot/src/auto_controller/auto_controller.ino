@@ -15,17 +15,11 @@ PIController        wheelVelCtrl;     // velocity PI controller class
 PathPlanner         pathPlanner;      // path planner
 unsigned long       prevTime = 0;
 unsigned long       prev_task_time;
-boolean usePathPlanner = true;
 bool use_manual_contr = false;
 
 float VL = 0, VR = 0;
 
 char c;
-void drive_forwards();
-void drive_backwards();
-void drive_ccw();
-void drive_cw();
-void stall();
 
 // ROS
 ros::NodeHandle node_handle;
@@ -132,23 +126,23 @@ void loop() {
 }
 
 void drive_forwards() {
-  VL = 0.3;
-  VR = 0.3;
+  VL = 1;
+  VR = 1;
 }
 
 void drive_backwards() {
-  VL = -0.3;
-  VR = -0.3;
+  VL = -1;
+  VR = -1;
 }
 
 void drive_cw() {
-  VL = 0.3;
-  VR = -0.3;
+  VL = 1;
+  VR = -1;
 }
 
 void drive_ccw() {
-  VL = -0.3;
-  VR = 0.3;
+  VL = -1;
+  VR = 1;
 }
 
 void stall(){
