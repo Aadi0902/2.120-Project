@@ -41,41 +41,43 @@ def path_callback(path_dist):
     global y_e_up, y_e_down, y_e_home, y_e_carry, theta_up, theta_home, theta_down, mode_prev, mode, prev_time, task_time_inp, manual_control
     vel_curv = Float32MultiArray()
     
+    robot_vel = 1
+    
     rad_turn = 0.25
 
-    d1 = 1
+    d1 = 0.9
     d2 = rad_turn*PI/2
-    d3 = 0.8 - rad_turn
-    d4 = 0.8
+    d3 = 1 - rad_turn
+    d4 = 0.6
     d5 = rad_turn*PI/2
-    d6 = 0.7
+    d6 = 1.3
     d7 = 0.2
     d8 = 0.9
     d9 = 0.4
     
     if path_dist.data < d1: # Straight
         mode = 5
-        vel_curv.data = [0.5, 0]
+        vel_curv.data = [robot_vel, 0]
     elif path_dist.data < d1+d2: # Turn
-        vel_curv.data = [0.5, -1/rad_turn]
+        vel_curv.data = [robot_vel, -1/rad_turn]
     elif path_dist.data < d1+d2+d3: # Straight
         mode = 1
-        vel_curv.data = [0.5, 0]
+        vel_curv.data = [robot_vel, 0]
     elif path_dist.data < d1+d2+d3+d4: # Back
         mode = 2
-        vel_curv.data = [-0.5, 0]
+        vel_curv.data = [-robot_vel, 0]
     elif path_dist.data < d1+d2+d3+d4+d5: # Back turn
         mode = 3
-        vel_curv.data = [-0.5, -1/rad_turn]
+        vel_curv.data = [-robot_vel, -1/rad_turn]
     elif path_dist.data < d1+d2+d3+d4+d5+d6: # Straight
-        vel_curv.data = [0.5, 0]
+        vel_curv.data = [robot_vel, 0]
     elif path_dist.data < d1+d2+d3+d4+d5+d6+d7: # Turn
-        vel_curv.data = [0.5, -1/rad_turn]
+        vel_curv.data = [robot_vel, -1/rad_turn]
     elif path_dist.data < d1+d2+d3+d4+d5+d6+d7+d8: # Straight
-        vel_curv.data = [0.5, 0]
+        vel_curv.data = [robot_vel, 0]
     elif path_dist.data < d1+d2+d3+d4+d5+d6+d7+d8+d9: # Straight
         mode = 4
-        vel_curv.data = [-0.5, 0]
+        vel_curv.data = [-robot_vel, 0]
     else:
         mode = 5
         vel_curv.data = [0, 0]
@@ -100,7 +102,7 @@ def path_callback(path_dist):
         #mode = 4
         y_e_inp = y_e_up
         theta_inp = theta_down
-        task_time_inp = 1
+        task_time_inp = 2
     else:
         y_e_inp = y_e_home
         theta_inp = theta_up

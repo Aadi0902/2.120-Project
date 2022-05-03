@@ -64,7 +64,7 @@ def on_press(key_press):
         #mode = 4
         y_e_inp = y_e_up
         theta_inp = theta_down
-        task_time_inp = 1
+        task_time_inp = 2
     else:
         y_e_inp = y_e_home
         theta_inp = theta_up
