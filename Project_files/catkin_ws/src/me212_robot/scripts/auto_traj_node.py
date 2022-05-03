@@ -29,9 +29,15 @@ vel_curv_pub = rospy.Publisher("vel_curvature", Float64MultiArray, queue_size=10
 rospy.init_node("auto_traj_pub_sub",anonymous=True)
 
 prev_time = rospy.get_time() 
+manual_control = False
+
+
+def manual_callback(man_contr_msg):
+    global manual_control
+    manual_control = man_contr_msg.data
 
 def path_callback(path_dist):
-    global y_e_up, y_e_down, y_e_home, y_e_carry, theta_up, theta_home, theta_down, mode_prev, mode, prev_time, task_time_inp
+    global y_e_up, y_e_down, y_e_home, y_e_carry, theta_up, theta_home, theta_down, mode_prev, mode, prev_time, task_time_inp, manual_control
     vel_curv = Float64MultiArray()
     
     rad_turn = 0.25
@@ -111,12 +117,14 @@ def path_callback(path_dist):
     mode_param = Float64MultiArray()
     mode_param.data = [mode, y_e_inp, theta_inp, task_time_inp]
 
-    mode_pub.publish(mode_param)
-    vel_curv_pub.publish(vel_curv)
-    rospy.loginfo(path_dist.data)
+    if not manual_control:
+        mode_pub.publish(mode_param)
+        vel_curv_pub.publish(vel_curv)
+        rospy.loginfo(path_dist.data)
     
 def main():
     rospy.Subscriber("path_distance", Float32, path_callback)
+    rospy.Subscriber("manual_control", Bool, manual_callback)
     rospy.spin()
         
 if __name__ == '__main__':

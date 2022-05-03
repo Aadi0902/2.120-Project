@@ -14,7 +14,7 @@ q_2_limit = 180 * np.pi/180 # Joint angle limit for q_2
 
 # Default values
 y_e_up = 0.06
-y_e_down = 0.05
+y_e_down = -0.055
 y_e_home = 0
 y_e_carry = -0.02
 

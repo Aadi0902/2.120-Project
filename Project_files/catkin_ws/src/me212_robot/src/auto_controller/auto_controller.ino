@@ -93,11 +93,6 @@ void loop() {
         // 1. Obtain and convert encoder measurement
         encoder.update(); 
 
-        // 2. Compute robot odometry
-        robotPose.update(encoder.dPhiL, encoder.dPhiR); 
-
-        path_dist.data = robotPose.pathDistance;
-        
         if(use_manual_contr)
         {
             if (c[0] == 'w'){
@@ -119,7 +114,12 @@ void loop() {
           pathPlanner.desiredWV_R = VR;   
           pathPlanner.desiredWV_L = VL;
         }
-        
+        else
+        {
+            // 2. Compute robot odometry
+            robotPose.update(encoder.dPhiL, encoder.dPhiR); 
+        }
+        path_dist.data = robotPose.pathDistance;
         // 5. Command desired velocity with PI controller
         wheelVelCtrl.doPIControl("Left",  pathPlanner.desiredWV_L, encoder.v_L); 
         wheelVelCtrl.doPIControl("Right", pathPlanner.desiredWV_R, encoder.v_R);
