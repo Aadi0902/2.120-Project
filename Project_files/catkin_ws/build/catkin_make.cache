@@ -1,2 +1,2 @@
-apriltags:me212_robot:me212bot:orb_slam_2_ros
+apriltags:image_pipeline-kinetic/camera_calibration:image_pipeline-kinetic/depth_image_proc:image_pipeline-kinetic/image_pipeline:image_pipeline-kinetic/image_proc:image_pipeline-kinetic/image_publisher:image_pipeline-kinetic/image_rotate:image_pipeline-kinetic/image_view:image_pipeline-kinetic/stereo_image_proc:me212_robot:me212bot:orb_slam_2_ros
 -DCATKIN_DEVEL_PREFIX=/home/robot/2.120-Project/Project_files/catkin_ws/devel -DCMAKE_INSTALL_PREFIX=/home/robot/2.120-Project/Project_files/catkin_ws/install -G Unix Makefiles

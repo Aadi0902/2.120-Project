@@ -1,0 +1,8 @@
+prefix=/home/robot/2.120-Project/Project_files/catkin_ws/devel
+
+Name: stereo_image_proc
+Description: Description of stereo_image_proc
+Version: 1.12.23
+Cflags: -I/home/robot/2.120-Project/Project_files/catkin_ws/devel/include -I/home/robot/2.120-Project/Project_files/catkin_ws/src/image_pipeline-kinetic/stereo_image_proc/include
+Libs: -L${prefix}/lib -lstereo_image_proc
+Requires: image_geometry image_proc sensor_msgs stereo_msgs

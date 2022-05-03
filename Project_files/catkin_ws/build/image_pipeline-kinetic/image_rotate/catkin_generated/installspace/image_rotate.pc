@@ -1,0 +1,8 @@
+prefix=/home/robot/2.120-Project/Project_files/catkin_ws/install
+
+Name: image_rotate
+Description: Description of image_rotate
+Version: 1.12.23
+Cflags: -I${prefix}/include
+Libs: -L${prefix}/lib 
+Requires: 
