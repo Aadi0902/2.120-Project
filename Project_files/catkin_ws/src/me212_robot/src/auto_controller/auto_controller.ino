@@ -3,9 +3,9 @@
 #include "helper.h"
 #include <ros.h>
 #include <std_msgs/Float32.h>
-#include <std_msgs/Float64MultiArray.h>
+#include <std_msgs/Float32MultiArray.h>
 #include <std_msgs/Bool.h>
-#include <std_msgs/String.h>
+#include <std_msgs/Char.h>
 
 // rosrun rosserial_python serial_node.py __name:="node1" _port:=/dev/ttyACM0 _baud:=115200
 
@@ -20,7 +20,7 @@ bool use_manual_contr = false;
 
 float VL = 0, VR = 0;
 
-char c[5];
+char c;
 void drive_forwards();
 void drive_backwards();
 void drive_ccw();
@@ -30,7 +30,7 @@ void stall();
 // ROS
 ros::NodeHandle node_handle;
 
-void vel_curv_callback(const std_msgs::Float64MultiArray& vel_curv) {
+void vel_curv_callback(const std_msgs::Float32MultiArray& vel_curv) {
   float vel = vel_curv.data[0];
   float k = vel_curv.data[1];
   if(!use_manual_contr)
@@ -51,14 +51,13 @@ void manual_auto_callback(const std_msgs::Bool& manual_contr) {
       node_handle.loginfo("Autonomous control");
   }
 }
-void manual_callback(const std_msgs::String& inp) {
-  String tempStr = inp.data;
-  tempStr.toCharArray(c,5);
+void manual_callback(const std_msgs::Char& inp) {
+  c = inp.data;
   node_handle.loginfo("Received keyboard input");
 }
 
-ros::Subscriber<std_msgs::String> char_subscriber("manual_inp", &manual_callback);
-ros::Subscriber<std_msgs::Float64MultiArray> vel_curv_subscriber("vel_curvature", &vel_curv_callback);
+ros::Subscriber<std_msgs::Char> char_subscriber("manual_inp", &manual_callback);
+ros::Subscriber<std_msgs::Float32MultiArray> vel_curv_subscriber("vel_curvature", &vel_curv_callback);
 ros::Subscriber<std_msgs::Bool> manual_auto_sub("manual_control", &manual_auto_callback);
 
 
@@ -95,19 +94,19 @@ void loop() {
 
         if(use_manual_contr)
         {
-            if (c[0] == 'w'){
+            if (c == 'w'){
               drive_forwards();
               node_handle.loginfo("Forwards");
-            } else if (c[0] == 's'){
+            } else if (c == 's'){
               drive_backwards();
               node_handle.loginfo("Backwards");
-            } else if (c[0] == 'a'){
+            } else if (c == 'a'){
               drive_ccw();
               node_handle.loginfo("Left");
-            } else if (c[0] == 'd'){
+            } else if (c == 'd'){
               drive_cw(); 
               node_handle.loginfo("Right");
-            } else if (c[0] == ' '){
+            } else if (c == ' '){
               stall();
               node_handle.loginfo("Stopp");
             }

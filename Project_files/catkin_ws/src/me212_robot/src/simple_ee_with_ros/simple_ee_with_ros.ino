@@ -3,7 +3,7 @@
 ***********************************************************************************/
 #include <Encoder.h>
 #include <ros.h>
-#include <std_msgs/Float64MultiArray.h>
+#include <std_msgs/Float32MultiArray.h>
 
 
 
@@ -92,14 +92,14 @@ void(* resetFunc) (void) = 0;
 // ================================================================
 ros::NodeHandle node_handle;
 
-std_msgs::Float64MultiArray enc_current_values;
-void subscriberCallback(const std_msgs::Float64MultiArray& set_point_val) {
+std_msgs::Float32MultiArray enc_current_values;
+void subscriberCallback(const std_msgs::Float32MultiArray& set_point_val) {
    set_point_1 = set_point_val.data[0];
    set_point_2 = set_point_val.data[1];
    node_handle.loginfo("Received value");
 }
 
-ros::Subscriber<std_msgs::Float64MultiArray> set_point_subscriber("set_point_topic", &subscriberCallback); // "set_point_topic" is the topic name, &subscriberCallback is the subscriber call back function
+ros::Subscriber<std_msgs::Float32MultiArray> set_point_subscriber("set_point_topic", &subscriberCallback); // "set_point_topic" is the topic name, &subscriberCallback is the subscriber call back function
 ros::Publisher enc_current_publisher("encoder_current_val", &enc_current_values);
 
 // ================================================================

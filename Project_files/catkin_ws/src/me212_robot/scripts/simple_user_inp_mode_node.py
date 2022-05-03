@@ -1,7 +1,6 @@
 #!/usr/bin/python
 import rospy
-from std_msgs.msg import Float64MultiArray
-from std_msgs.msg import String
+from std_msgs.msg import Float32MultiArray
 from std_msgs.msg import Bool
 import numpy as np
 from pynput.keyboard import Key, Listener
@@ -16,12 +15,12 @@ theta_up = 0
 theta_home = -48.01 * np.pi/180
 theta_down = 2*-48.01*np.pi/180
 
-key_inp = " "
+key_inp = ' '
 mode_inp = 1
 
 manual_contr = False
 
-mode_pub = rospy.Publisher("exec_mode", Float64MultiArray, queue_size=10)
+mode_pub = rospy.Publisher("exec_mode", Float32MultiArray, queue_size=10)
 manual_pub = rospy.Publisher("manual_inp", String, queue_size=10)
 auto_man_pub = rospy.Publisher("manual_control", Bool, queue_size=10)
 rospy.init_node("user_mode_pub",anonymous=True)
@@ -30,18 +29,18 @@ def on_press(key_press):
     global mode_inp, key_inp, y_e_up, y_e_down, y_e_home, theta_up, theta_home, theta_down, manual_contr
     try:
         key = key_press.char
-        if key == "p": # p is autonomous control
+        if key == 'p': # p is autonomous control
             manual_contr = False
-        elif key == "o": # o is manual control
+        elif key == 'o': # o is manual control
             manual_contr = True
 
-        if key == "w" or key == "s" or key == "d" or key == "a":
+        if key == 'w' or key == 's' or key == 'd' or key == 'a':
             key_inp = key
-        elif key == "1" or key == "2" or key == "3" or key == "4" or key == "5":
+        elif key == '1' or key == '2' or key == '3' or key == '4' or key == '5':
             mode_inp = int(key)
-            key_inp = " "
+            key_inp = ' '
         else:
-            key_inp = " "
+            key_inp = ' ' 
     except:
         print("INVALID INPUT, should be an integer")
         return
@@ -69,7 +68,7 @@ def on_press(key_press):
         y_e_inp = 0
         theta_inp = 0
         task_time_inp = 0.5 # Doesn't mean anything in this section
-    mode_param = Float64MultiArray()
+    mode_param = Float32MultiArray()
     mode_param.data = [mode_inp, y_e_inp, theta_inp, task_time_inp]
 
     key_inp_str = String()
@@ -89,7 +88,7 @@ def on_press(key_press):
 def on_release(key):
     global manual_contr
     if manual_contr: # Stops publishing if autonomous control
-        key_inp = " "
+        key_inp = ' '
         key_inp_str = String()
         key_inp_str.data = key_inp
         manual_pub.publish(key_inp_str)

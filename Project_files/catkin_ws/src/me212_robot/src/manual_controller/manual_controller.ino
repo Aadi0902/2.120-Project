@@ -11,7 +11,7 @@
 #include "Arduino.h"
 #include "helper.h"
 #include <ros.h>
-#include <std_msgs/String.h>
+#include <std_msgs/Char.h>
 #include <std_msgs/UInt16.h>
 
 EncoderMeasurement  encoder(26);      // FIX THIS: encoder handler class, set the motor type 53 or 26 here
@@ -21,7 +21,7 @@ PIController        wheelVelCtrl;     // velocity PI controller class
 PathPlanner         pathPlanner;      // path planner
 unsigned long       prevTime = 0;
 
-char c[5];
+char c;
 ros::NodeHandle node_handle;
 
 float VL = 0;
@@ -30,12 +30,11 @@ float VR = 0;
 boolean usePathPlanner = false;
 
 // ROS
-void subscriberCallback(const std_msgs::String& inp) {
-  String tempStr = inp.data;
-  tempStr.toCharArray(c,5);
+void subscriberCallback(const std_msgs::Char& inp) {
+  c = inp.data;
   node_handle.loginfo("Received value");
 }
-ros::Subscriber<std_msgs::String> char_subscriber("manual_inp", &subscriberCallback);
+ros::Subscriber<std_msgs::Char> char_subscriber("manual_inp", &subscriberCallback);
 
 void drive_forwards();
 void drive_backwards();
@@ -76,16 +75,16 @@ void loop() {
             if (c[0] == 'w'){
               drive_forwards();
               node_handle.loginfo("Forwards");
-            } else if (c[0] == 's'){
+            } else if (c == 's'){
               drive_backwards();
               node_handle.loginfo("Backwards");
-            } else if (c[0] == 'a'){
+            } else if (c == 'a'){
               drive_ccw();
               node_handle.loginfo("Left");
-            } else if (c[0] == 'd'){
+            } else if (c == 'd'){
               drive_cw(); 
               node_handle.loginfo("Right");
-            } else if (c[0] == ' '){
+            } else if (c == ' '){
               stall();
               node_handle.loginfo("Stopp");
             }

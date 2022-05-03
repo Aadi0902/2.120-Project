@@ -1,0 +1,43 @@
+
+cmd "0-roscore" {
+    exec = "roscore";
+    host = "localhost";
+}
+
+cmd "1-arduino1" {
+    exec = "rosrun rosserial_python serial_node.py __name:="node1" _port:=/dev/ttyACM0 _baud:=115200";
+    host = "localhost";
+}
+
+cmd "2-arduino2" {
+    exec = "rosrun rosserial_python serial_node.py __name:="node2" _port:=/dev/ttyACM1 _baud:=115200";
+    host = "localhost";
+}
+
+cmd "3-user-inp" {
+    exec = "rosrun me212_robot simple_user_inp_mode_node.py";
+    host = "localhost";
+}
+
+cmd "4-set-mode" {
+    exec = "rosrun me212_robot simple_set_point_node.py";
+    host = "localhost";
+}
+
+cmd "5-run-traj" {
+    exec = ""rosrun me212_robot auto_traj_node.py";";
+    host = "localhost";
+}
+
+
+script "run" {
+    start cmd "0-roscore";
+    wait ms 1000;
+    start cmd "1-arduino1";
+    start cmd "2-arduino2";
+    wait ms 3500;
+    start cmd "3-user-inp";
+    wait ms 200;
+    start cmd "4-set-mode";
+    start cmd "5-run-traj";
+}

@@ -1,5 +1,3 @@
-
-
 #include "helper.h"
 
 //Encoder Measurement Class function implementation
